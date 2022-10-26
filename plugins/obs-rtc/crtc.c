@@ -8,10 +8,10 @@
 
 /* clang-format off */
 
-#define TEXT_WINDOW_CAPTURE obs_module_text("Rtc")
-#define TEXT_WINDOW         obs_module_text("WindowCapture.Window")
-#define TEXT_METHOD         obs_module_text("WindowCapture.Method")
-#define TEXT_METHOD_AUTO    obs_module_text("WindowCapture.Method.Auto")
+#define TEXT_WINDOW_CAPTURE obs_module_text("Rtc.Name")
+#define TEXT_WINDOW         obs_module_text("Rtc.RoomName")
+#define TEXT_METHOD         obs_module_text("Rtc.WebSocket")
+#define TEXT_METHOD_AUTO    obs_module_text("Rtc.WebSocket.AutoConnnect")
 #define TEXT_METHOD_BITBLT  obs_module_text("WindowCapture.Method.BitBlt")
 #define TEXT_METHOD_WGC     obs_module_text("WindowCapture.Method.WindowsGraphicsCapture")
 #define TEXT_MATCH_PRIORITY obs_module_text("WindowCapture.Priority")
