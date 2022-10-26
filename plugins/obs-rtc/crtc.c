@@ -8,7 +8,7 @@
 
 /* clang-format off */
 
-#define TEXT_WINDOW_CAPTURE obs_module_text("WindowCapture")
+#define TEXT_WINDOW_CAPTURE obs_module_text("Rtc")
 #define TEXT_WINDOW         obs_module_text("WindowCapture.Window")
 #define TEXT_METHOD         obs_module_text("WindowCapture.Method")
 #define TEXT_METHOD_AUTO    obs_module_text("WindowCapture.Method.Auto")
@@ -694,7 +694,7 @@ static void wc_render(void *data, gs_effect_t *effect)
 }
 
 struct obs_source_info window_capture_info = {
-	.id = "window_capture",
+	.id = "rtc",
 	.type = OBS_SOURCE_TYPE_INPUT,
 	.output_flags = OBS_SOURCE_VIDEO | OBS_SOURCE_CUSTOM_DRAW |
 			OBS_SOURCE_SRGB,
