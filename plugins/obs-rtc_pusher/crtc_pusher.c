@@ -7,7 +7,7 @@
 #include "window-helpers.h"
 #include "../../libobs/util/platform.h"
 #include "../../libobs-winrt/winrt-capture.h"
-#include "crtc.h"
+#include "crtc_pusher.h"
 /* clang-format off */
  
 #define TEXT_WINDOW_CAPTURE obs_module_text("Rtc.Pusher.Name")

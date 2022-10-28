@@ -4,10 +4,10 @@
 #include <util/platform.h>
 
 OBS_DECLARE_MODULE()
-OBS_MODULE_USE_DEFAULT_LOCALE("rtc", "en-US")
+OBS_MODULE_USE_DEFAULT_LOCALE("rtc_pusher", "en-US")
 MODULE_EXPORT const char *obs_module_description(void)
 {
-	return "rtc";
+	return "rtc_pusher";
 }
 
  

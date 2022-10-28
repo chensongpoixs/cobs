@@ -166,7 +166,7 @@ endif()
 
 set(rtc_HEADERS
           capture.h
-         crtc.h
+         crtc_player.h
          dc-capture.h 
          obfuscate.h
          window-helpers.h
@@ -174,7 +174,7 @@ set(rtc_HEADERS
 
 set(rtc_SOURCES
           capture.cpp
-        crtc.c
+        crtc_player.c
         dc-capture.c 
         obfuscate.c
         window-helpers.c

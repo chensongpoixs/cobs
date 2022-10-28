@@ -16,7 +16,7 @@ purpose:		cglobal_rtc
 #include "modules/desktop_capture/desktop_capturer.h"
 #include "modules/desktop_capture/desktop_frame.h"
 #include "api/video/i420_buffer.h"
-#include "crtc.h"
+#include "crtc_player.h"
 #include <thread>
 #include <atomic>
 namespace chen {

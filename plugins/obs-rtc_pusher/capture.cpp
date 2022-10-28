@@ -14,7 +14,7 @@ purpose:		assertion macros
 #include "capture.h"
 
 
-#include "crtc.h"
+#include "crtc_pusher.h"
 namespace chen {
 
 DesktopCapture::DesktopCapture() : dc_(nullptr), start_flag_(false) {}
