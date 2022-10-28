@@ -31,6 +31,8 @@ extern void dc_capture_init(struct dc_capture *capture, int x, int y,
 			    bool compatibility);
 extern void dc_capture_free(struct dc_capture *capture);
 
-extern void dc_capture_capture(struct dc_capture *capture, HWND window);
+extern void dc_capture_capture(unsigned char *rgba_ptr,
+			       BITMAPINFO bmi, int32_t width, int32_t height, struct dc_capture *capture, 
+			       HWND window);
 extern void dc_capture_render(struct dc_capture *capture,
 			      bool texcoords_centered);

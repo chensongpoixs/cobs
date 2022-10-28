@@ -1,3 +1,5 @@
+
+ 
 #include <stdlib.h>
 #include <util/dstr.h>
 #include <util/threading.h>
@@ -5,9 +7,9 @@
 #include "window-helpers.h"
 #include "../../libobs/util/platform.h"
 #include "../../libobs-winrt/winrt-capture.h"
-
+#include "crtc.h"
 /* clang-format off */
-
+ 
 #define TEXT_WINDOW_CAPTURE obs_module_text("Rtc.Name")
 #define TEXT_WINDOW         obs_module_text("Rtc.RoomName")
 #define TEXT_METHOD         obs_module_text("Rtc.WebSocket")
@@ -98,7 +100,75 @@ struct window_capture {
 	PFN_SetThreadDpiAwarenessContext set_thread_dpi_awareness_context;
 	PFN_GetThreadDpiAwarenessContext get_thread_dpi_awareness_context;
 	PFN_GetWindowDpiAwarenessContext get_window_dpi_awareness_context;
+
+
+	//////
+	
+
+
+
 };
+
+
+struct rtc_capture {
+	BITMAPINFO bmi;
+	unsigned char *rgba_ptr;
+	unsigned char *cur_rgba_ptr;
+	int32_t width;
+	int32_t height;
+};
+
+
+static struct rtc_capture rtc_data = {0};
+
+
+//static FILE *out_rtc_file_ptr = NULL;
+static  void capture_callback(void *data, unsigned char *rgba_ptr,
+		      int32_t width, int32_t height)
+{
+	struct window_capture *wc = data;
+	if (!wc)
+	{
+		
+		return;
+	}
+	if (!rtc_data.rgba_ptr)
+	{
+		size_t size = width * height * 4;
+		rtc_data.rgba_ptr = malloc(sizeof(unsigned char) * size);
+		rtc_data.cur_rgba_ptr = malloc(sizeof(unsigned char) * size);
+		if (!rtc_data.rgba_ptr || !rtc_data.cur_rgba_ptr)
+		{
+			return;
+		}
+		rtc_data.width = width;
+		rtc_data.height = height;
+		ZeroMemory(&rtc_data.bmi, sizeof(rtc_data.bmi));
+		rtc_data.bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+		rtc_data.bmi.bmiHeader.biPlanes = 1;
+		rtc_data.bmi.bmiHeader.biBitCount = 32;
+		rtc_data.bmi.bmiHeader.biCompression = BI_RGB;
+		rtc_data.bmi.bmiHeader.biWidth = width;
+		rtc_data.bmi.bmiHeader.biHeight = -height;
+		rtc_data.bmi.bmiHeader.biSizeImage =
+			 width * height * (rtc_data.bmi.bmiHeader.biBitCount >> 3);
+	}
+	/*if (!out_rtc_file_ptr) {
+		out_rtc_file_ptr = fopen("./rtc_chensong.yuv", "wb+");
+	}
+	*/
+	memcpy(rtc_data.rgba_ptr, rgba_ptr, width * height * 4);
+	unsigned char *temp = rtc_data.cur_rgba_ptr;
+	rtc_data.cur_rgba_ptr = rtc_data.rgba_ptr;
+	rtc_data.rgba_ptr = temp;
+	/*if (out_rtc_file_ptr) {
+		fwrite(rtc_data.cur_rgba_ptr, width * height * 3, 1,
+		       out_rtc_file_ptr);
+		fflush(out_rtc_file_ptr);
+	}*/
+}
+
+
 
 static const char *wgc_partial_match_classes[] = {
 	"Chrome",
@@ -245,26 +315,33 @@ static bool load_winrt_imports(struct winrt_exports *exports, void *module,
 	return success;
 }
 
-extern bool graphics_uses_d3d11;
+//extern bool graphics_uses_d3d11;
 
 static void *wc_create(obs_data_t *settings, obs_source_t *source)
 {
 	struct window_capture *wc = bzalloc(sizeof(struct window_capture));
+	//memset(wc, 0, sizeof(struct window_capture));
 	wc->source = source;
 
-	pthread_mutex_init(&wc->update_mutex, NULL);
+	
 
-	if (graphics_uses_d3d11) {
+	pthread_mutex_init(&wc->update_mutex, NULL);
+	 
+	c_capture_init(wc);
+	c_set_video_callback(&capture_callback);
+	c_capture_startup();
+	/*if (graphics_uses_d3d11) {
 		static const char *const module = "libobs-winrt";
 		wc->winrt_module = os_dlopen(module);
 		if (wc->winrt_module) {
 			load_winrt_imports(&wc->exports, wc->winrt_module,
 					   module);
 		}
-	}
+	}*/
 
 	const HMODULE hModuleUser32 = GetModuleHandle(L"User32.dll");
 	if (hModuleUser32) {
+		//让 DPI 察觉到当前线程
 		PFN_SetThreadDpiAwarenessContext
 			set_thread_dpi_awareness_context =
 				(PFN_SetThreadDpiAwarenessContext)GetProcAddress(
@@ -275,6 +352,7 @@ static void *wc_create(obs_data_t *settings, obs_source_t *source)
 				(PFN_GetThreadDpiAwarenessContext)GetProcAddress(
 					hModuleUser32,
 					"GetThreadDpiAwarenessContext");
+		// 获取某个窗口的DPI模式
 		PFN_GetWindowDpiAwarenessContext
 			get_window_dpi_awareness_context =
 				(PFN_GetWindowDpiAwarenessContext)GetProcAddress(
@@ -323,6 +401,7 @@ static void wc_actual_destroy(void *data)
 
 static void wc_destroy(void *data)
 {
+	c_capture_destroy();
 	obs_queue_task(OBS_TASK_GRAPHICS, wc_actual_destroy, data, false);
 }
 
@@ -348,17 +427,19 @@ static void wc_update(void *data, obs_data_t *settings)
 static uint32_t wc_width(void *data)
 {
 	struct window_capture *wc = data;
-	return (wc->method == METHOD_WGC)
+	return rtc_data.width;
+	/*return (wc->method == METHOD_WGC)
 		       ? wc->exports.winrt_capture_width(wc->capture_winrt)
-		       : wc->capture.width;
+		       : wc->capture.width;*/
 }
 
 static uint32_t wc_height(void *data)
 {
 	struct window_capture *wc = data;
-	return (wc->method == METHOD_WGC)
+	return rtc_data.height;
+	/*return (wc->method == METHOD_WGC)
 		       ? wc->exports.winrt_capture_height(wc->capture_winrt)
-		       : wc->capture.height;
+		       : wc->capture.height;*/
 }
 
 static void wc_defaults(obs_data_t *defaults)
@@ -428,10 +509,7 @@ static void insert_preserved_val(obs_property_t *p, const char *val, size_t idx)
 	bfree(title);
 	bfree(executable);
 }
-//extern bool check_window_property_setting(obs_properties_t *ppts,
-//					  obs_property_t *p,
-//					  obs_data_t *settings, const char *val,
-//					  size_t idx);
+
 bool check_window_property_setting(obs_properties_t *ppts, obs_property_t *p,
 				   obs_data_t *settings, const char *val,
 				   size_t idx)
@@ -538,79 +616,78 @@ static void wc_tick(void *data, float seconds)
 	if (!obs_source_showing(wc->source))
 		return;
 
-	if (!wc->window || !IsWindow(wc->window)) {
-		if (!wc->title && !wc->class) {
-			if (wc->capture.valid)
-				dc_capture_free(&wc->capture);
-			return;
-		}
+	//if (!wc->window || !IsWindow(wc->window)) {
+	//	if (!wc->title && !wc->class) {
+	//		if (wc->capture.valid)
+	//			dc_capture_free(&wc->capture);
+	//		return;
+	//	}
 
-		wc->check_window_timer += seconds;
+	//	wc->check_window_timer += seconds;
 
-		if (wc->check_window_timer < WC_CHECK_TIMER) {
-			if (wc->capture.valid)
-				dc_capture_free(&wc->capture);
-			return;
-		}
+	//	if (wc->check_window_timer < WC_CHECK_TIMER) {
+	//		if (wc->capture.valid)
+	//			dc_capture_free(&wc->capture);
+	//		return;
+	//	}
 
-		if (wc->capture_winrt) {
-			wc->exports.winrt_capture_free(wc->capture_winrt);
-			wc->capture_winrt = NULL;
-		}
+	//	if (wc->capture_winrt) {
+	//		wc->exports.winrt_capture_free(wc->capture_winrt);
+	//		wc->capture_winrt = NULL;
+	//	}
 
-		wc->check_window_timer = 0.0f;
+	//	wc->check_window_timer = 0.0f;
 
-		wc->window = (wc->method == METHOD_WGC)
-				     ? find_window_top_level(INCLUDE_MINIMIZED,
-							     wc->priority,
-							     wc->class,
-							     wc->title,
-							     wc->executable)
-				     : find_window(INCLUDE_MINIMIZED,
-						   wc->priority, wc->class,
-						   wc->title, wc->executable);
-		if (!wc->window) {
-			if (wc->capture.valid)
-				dc_capture_free(&wc->capture);
-			return;
-		}
+	//	wc->window = (wc->method == METHOD_WGC)
+	//			     ? find_window_top_level(INCLUDE_MINIMIZED,
+	//						     wc->priority,
+	//						     wc->class,
+	//						     wc->title,
+	//						     wc->executable)
+	//			     : find_window(INCLUDE_MINIMIZED,
+	//					   wc->priority, wc->class,
+	//					   wc->title, wc->executable);
+	//	if (!wc->window) {
+	//		if (wc->capture.valid)
+	//			dc_capture_free(&wc->capture);
+	//		return;
+	//	}
 
-		wc->previously_failed = false;
-		reset_capture = true;
+	//	wc->previously_failed = false;
+	//	reset_capture = true;
 
-	} else if (IsIconic(wc->window) || !IsWindowVisible(wc->window)) {
-		return; /* If HWND is invisible, WGC module can't be initialized successfully */
-	}
+	//} else if (IsIconic(wc->window) || !IsWindowVisible(wc->window)) {
+	//	return; /* If HWND is invisible, WGC module can't be initialized successfully */
+	//}
 
 	wc->cursor_check_time += seconds;
-	if (wc->cursor_check_time >= CURSOR_CHECK_TIME) {
-		DWORD foreground_pid, target_pid;
+	//if (wc->cursor_check_time >= CURSOR_CHECK_TIME) {
+	//	DWORD foreground_pid, target_pid;
 
-		// Can't just compare the window handle in case of app with child windows
-		if (!GetWindowThreadProcessId(GetForegroundWindow(),
-					      &foreground_pid))
-			foreground_pid = 0;
+	//	// Can't just compare the window handle in case of app with child windows
+	//	if (!GetWindowThreadProcessId(GetForegroundWindow(),
+	//				      &foreground_pid))
+	//		foreground_pid = 0;
 
-		if (!GetWindowThreadProcessId(wc->window, &target_pid))
-			target_pid = 0;
+	//	if (!GetWindowThreadProcessId(wc->window, &target_pid))
+	//		target_pid = 0;
 
-		const bool cursor_hidden = foreground_pid && target_pid &&
-					   foreground_pid != target_pid;
-		wc->capture.cursor_hidden = cursor_hidden;
-		if (wc->capture_winrt &&
-		    !wc->exports.winrt_capture_show_cursor(wc->capture_winrt,
-							   !cursor_hidden)) {
-			force_reset(wc);
-			return;
-		}
+	//	const bool cursor_hidden = foreground_pid && target_pid &&
+	//				   foreground_pid != target_pid;
+	//	wc->capture.cursor_hidden = cursor_hidden;
+	//	if (wc->capture_winrt &&
+	//	    !wc->exports.winrt_capture_show_cursor(wc->capture_winrt,
+	//						   !cursor_hidden)) {
+	//		force_reset(wc);
+	//		return;
+	//	}
 
-		wc->cursor_check_time = 0.0f;
-	}
+	//	wc->cursor_check_time = 0.0f;
+	//}
 
 	obs_enter_graphics();
-
-	if (wc->method == METHOD_BITBLT) {
-		DPI_AWARENESS_CONTEXT previous = NULL;
+	{
+		/*DPI_AWARENESS_CONTEXT previous = NULL;
 		if (wc->get_window_dpi_awareness_context != NULL) {
 			const DPI_AWARENESS_CONTEXT context =
 				wc->get_window_dpi_awareness_context(
@@ -635,9 +712,9 @@ static void wc_tick(void *data, float seconds)
 
 				wc->resize_timer = 0.0f;
 			}
-		}
+		}*/
 
-		if (reset_capture) {
+		/*if (reset_capture) {
 			wc->resize_timer = 0.0f;
 			wc->last_rect = rect;
 			dc_capture_free(&wc->capture);
@@ -645,25 +722,24 @@ static void wc_tick(void *data, float seconds)
 					rect.right - rect.left,
 					rect.bottom - rect.top, wc->cursor,
 					wc->compatibility);
-		}
-
-		dc_capture_capture(&wc->capture, wc->window);
-
-		if (previous)
-			wc->set_thread_dpi_awareness_context(previous);
-	} else if (wc->method == METHOD_WGC) {
-		if (wc->window && (wc->capture_winrt == NULL)) {
-			if (!wc->previously_failed) {
-				wc->capture_winrt =
-					wc->exports.winrt_capture_init_window(
-						wc->cursor, wc->window,
-						wc->client_area);
-
-				if (!wc->capture_winrt) {
-					wc->previously_failed = true;
-				}
+		}*/
+		if (rtc_data.rgba_ptr)
+		{
+			if ( wc->capture.width <= 0 || wc->capture.height <= 0)
+			{
+				dc_capture_init(&wc->capture, 0, 0,
+						rtc_data.width, rtc_data.height,
+						0, wc->compatibility);
 			}
+				
+			dc_capture_capture(rtc_data.cur_rgba_ptr, rtc_data.bmi, rtc_data.width, rtc_data.height,
+					   &wc->capture,
+					   wc->window);
+
 		}
+		
+		//if (previous)
+		//	wc->set_thread_dpi_awareness_context(previous);
 	}
 
 	obs_leave_graphics();
@@ -672,23 +748,9 @@ static void wc_tick(void *data, float seconds)
 static void wc_render(void *data, gs_effect_t *effect)
 {
 	struct window_capture *wc = data;
-	if (wc->method == METHOD_WGC) {
-		if (wc->capture_winrt) {
-			if (wc->exports.winrt_capture_active(
-				    wc->capture_winrt)) {
-				wc->exports.winrt_capture_render(
-					wc->capture_winrt);
-			} else {
-				wc->exports.winrt_capture_free(
-					wc->capture_winrt);
-				wc->capture_winrt = NULL;
-			}
-		}
-	} else {
-		dc_capture_render(
-			&wc->capture,
-			obs_source_get_texcoords_centered(wc->source));
-	}
+
+	dc_capture_render(&wc->capture,
+			  obs_source_get_texcoords_centered(wc->source));
 
 	UNUSED_PARAMETER(effect);
 }
@@ -711,3 +773,4 @@ struct obs_source_info window_capture_info = {
 	.get_properties = wc_properties,
 	.icon_type = OBS_ICON_TYPE_WINDOW_CAPTURE,
 };
+ 

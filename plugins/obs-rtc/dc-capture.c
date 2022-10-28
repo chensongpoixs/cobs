@@ -2,6 +2,8 @@
 
 #define WIN32_MEAN_AND_LEAN
 #include <windows.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 static inline void init_textures(struct dc_capture *capture)
 {
@@ -145,18 +147,18 @@ static inline void dc_capture_release_dc(struct dc_capture *capture)
 		gs_texture_release_dc(capture->texture);
 	}
 }
+//static FILE *out_file_ptr = NULL;
 
-void dc_capture_capture(struct dc_capture *capture, HWND window)
+void dc_capture_capture(unsigned char *rgba_ptr, BITMAPINFO bmi, int32_t width,
+			int32_t height,
+			struct dc_capture *capture,
+			HWND window)
 {
+	 
 	HDC hdc_target;
 	HDC hdc;
 
-	if (capture->capture_cursor) {
-		memset(&capture->ci, 0, sizeof(CURSORINFO));
-		capture->ci.cbSize = sizeof(CURSORINFO);
-		capture->cursor_captured = GetCursorInfo(&capture->ci);
-	}
-
+	 
 	hdc = dc_capture_get_dc(capture);
 	if (!hdc) {
 		blog(LOG_WARNING, "[capture_screen] Failed to get "
@@ -164,16 +166,24 @@ void dc_capture_capture(struct dc_capture *capture, HWND window)
 		return;
 	}
 
-	hdc_target = GetDC(window);
+	/*if (!out_file_ptr)
+	{
+		out_file_ptr = fopen("./chensong.yuv", "wb+");
+	}
+	if (out_file_ptr)
+	{
+		fwrite(rgba_ptr,
+		       1920* 1080  * 3,
+			 1,
+			 out_file_ptr);
+		fflush(out_file_ptr);
+	}*/
+	StretchDIBits(hdc, 0, 0, width, height, 0, 0, width, height,
+		      rgba_ptr,
+		      (BITMAPINFO *)&bmi.bmiHeader, DIB_RGB_COLORS, SRCCOPY);
 
-	BitBlt(hdc, 0, 0, capture->width, capture->height, hdc_target,
-	       capture->x, capture->y, SRCCOPY);
-
-	ReleaseDC(NULL, hdc_target);
-
-	if (capture->cursor_captured && !capture->cursor_hidden)
-		draw_cursor(capture, hdc, window);
-
+	 
+	 
 	dc_capture_release_dc(capture);
 
 	capture->texture_written = true;
@@ -181,7 +191,7 @@ void dc_capture_capture(struct dc_capture *capture, HWND window)
 
 static void draw_texture(struct dc_capture *capture, bool texcoords_centered)
 {
-	gs_effect_t *effect = obs_get_base_effect(OBS_EFFECT_OPAQUE);
+	gs_effect_t *effect = obs_get_base_effect(OBS_EFFECT_BILINEAR_LOWRES);
 	gs_technique_t *tech = gs_effect_get_technique(effect, "Draw");
 	gs_eparam_t *image = gs_effect_get_param_by_name(effect, "image");
 

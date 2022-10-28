@@ -3,7 +3,8 @@ if(DISABLE_PLUGINS)
 	message(STATUS "DISABLE_PLUGINS is set; building of plugins is disabled.")
 	return()
 endif()
-
+# vlc lib 
+# http://download.videolan.org/pub/videolan/vlc/2.2.4/win64/
 if(WIN32)
 	option(BUILD_CA_ENCODER "Build CoreAudio encoder module" ON)
 	if (BUILD_CA_ENCODER)
