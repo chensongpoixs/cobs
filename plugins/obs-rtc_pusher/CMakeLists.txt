@@ -170,6 +170,55 @@ set(rtc_HEADERS
          dc-capture.h 
          obfuscate.h
          window-helpers.h
+		 
+		 sdp/MediaSection.hpp
+		 sdp/RemoteSdp.hpp
+		 sdp/Utils.hpp
+		 casync_log.h
+		 cbase64.h
+		 ccapturer_tracksource.h
+		 ccfg.h 
+		 cclient.h 
+		 cconfig.h 
+		 cdataconsumer.h
+		 cdevice.h
+		 cdigit2str.h
+		 cinput_device.h
+		 cinput_device_event.h
+		 cint_point.h
+		 cint2str.h
+		 clog.h
+		 clog_color.h
+		 clog_define.h
+		 cmediasoup_mgr.h
+		 cmsg_base_id.h
+		 cmsg_dispatch.h
+		 cnet_types.h
+		 cnoncopyable.h
+		 cproducer.h
+		 crecv_transport.h
+		 csend_transport.h
+		 csession_description.h
+		 csingleton.h
+		 ctime_api.h
+		 ctime_const.h
+		 ctransport.h
+		 cwebscoket_connection.h
+		 cwebsocket_mgr.h
+		 cwebsocket_protoo.h
+		 cwebsocket_session.h
+		 cwindow_util.h
+		 desktop_capture_source.h
+		 json.hpp
+		 mediasoupclient.hpp
+		 ortc.hpp
+		 Robot.h
+		 scalabilityMode.hpp
+		 sdptransform.hpp
+		 Utils.hpp
+		 wsclient.h
+		 cassertion_macros.h
+		 build_version.h
 	)
 
 set(rtc_SOURCES
@@ -179,6 +228,48 @@ set(rtc_SOURCES
         obfuscate.c
         window-helpers.c
         plugin-main.c
+		
+		sdp/MediaSection.cpp
+		 sdp/RemoteSdp.cpp
+		 sdp/Utils.cpp
+		casync_log.cpp
+		cbase64.cpp
+		ccapturer_tracksource.cpp 
+		ccfg.cpp 
+		cclient.cpp 
+		cclient_handler.cpp 
+		cconfig.cpp 
+		cdataconsumer.cpp 
+		cdevice.cpp 
+		cdigit2str.cpp 
+		cinput_device.cpp 
+		cinput_device_event.cpp 
+		cint2str.cpp
+		clog.cpp 
+		clog_color.cpp 
+		cmediasoup_mgr.cpp
+		cmsg_dispatch.cpp
+		cnet_types.cpp
+		cproducer.cpp
+		crecv_transport.cpp
+		csend_transport.cpp
+		csession_description.cpp 
+		ctime_api.cpp
+		ctransport.cpp
+		cwebscoket_connection.cpp 
+		cwebsocket_mgr.cpp 
+		cwebsocket_protoo.cpp 
+		cwebsocket_session.cpp 
+		cwindow_util.cpp 
+		desktop_capture_source.cpp
+		grammar.cpp
+		mediasoupclient.cpp
+		ortc.cpp
+		parser.cpp
+		Robot.cpp 
+		scalabilityMode.cpp
+		writer.cpp
+		wsclient.cpp 
 	 )
 
 add_library(${PROJECT_NAME} MODULE

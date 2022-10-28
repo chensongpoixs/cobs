@@ -19,8 +19,9 @@ purpose:		cglobal_rtc
 #include "crtc_pusher.h"
 #include <thread>
 #include <atomic>
-namespace chen {
 
+namespace chen {
+class cclient;
 class DesktopCapture : public webrtc::DesktopCapturer::Callback,
 		       public rtc::VideoSinkInterface<webrtc::VideoFrame> {
 public:
@@ -36,6 +37,7 @@ public:
 
 
 	void SetData(void *data) { m_data = data; }
+	void SetClientCallback(cclient *client) { m_client_ptr = client; }
 	void SetCallback(send_video_callback callback)
 	{
 		m_callback = callback;
@@ -64,6 +66,7 @@ private:
 	rtc::scoped_refptr<webrtc::I420Buffer> i420_buffer_;
 	void *m_data {NULL};
 	send_video_callback m_callback{NULL};
+	cclient *m_client_ptr{NULL};
 };
 
 }
