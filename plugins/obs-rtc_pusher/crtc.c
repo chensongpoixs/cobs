@@ -10,7 +10,7 @@
 #include "crtc.h"
 /* clang-format off */
  
-#define TEXT_WINDOW_CAPTURE obs_module_text("Rtc.Name")
+#define TEXT_WINDOW_CAPTURE obs_module_text("Rtc.Pusher.Name")
 #define TEXT_WINDOW         obs_module_text("Rtc.RoomName")
 #define TEXT_METHOD         obs_module_text("Rtc.WebSocket")
 #define TEXT_METHOD_AUTO    obs_module_text("Rtc.WebSocket.AutoConnnect")
@@ -756,7 +756,7 @@ static void wc_render(void *data, gs_effect_t *effect)
 }
 
 struct obs_source_info window_capture_info = {
-	.id = "rtc",
+	.id = "rtc_pusher",
 	.type = OBS_SOURCE_TYPE_INPUT,
 	.output_flags = OBS_SOURCE_VIDEO | OBS_SOURCE_CUSTOM_DRAW |
 			OBS_SOURCE_SRGB,

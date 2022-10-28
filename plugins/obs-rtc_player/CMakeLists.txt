@@ -1,0 +1,234 @@
+project(obs-rtc_player)
+message(STATUS  ${PROJECT_NAME})
+#if(DISABLE_WEBRTC)
+#	message(STATUS "RTC plugin disabled")
+#	return()
+#	return()
+#endif()
+
+message(status ${ENABLE_WEBRTC})
+
+if(ENABLE_WEBRTC)
+	find_package(LibWebRTC REQUIRED) 
+else()
+	find_package(LibWebRTC)
+	if(NOT LibWebRTC_FOUND)
+		message(WARNING  "RTC  plugin disabled")
+		return()
+	endif()
+endif()
+
+
+set(WEBRTC_INCLUDE
+	${LIBWEBRTC_INCLUDE_DIRS}
+	${LIBWEBRTC_INCLUDE_DIRS}/third_party/abseil-cpp
+	${LIBWEBRTC_INCLUDE_DIRS}/third_party/libyuv/include
+)
+message(STATUS   ${WEBRTC_INCLUDE})
+message(STATUS  ${LIBWEBRTC_DEFINITIONS})
+message(status ${LIBWEBRTC_LIBRARIES})
+#find_package(LibWebRTC REQUIRED)
+include_directories(${WEBRTC_INCLUDE})
+#include_directories(${LIBWEBRTC_INCLUDE_DIRS}\third_party\abseil-cpp)
+#include_directories(${LIBWEBRTC_INCLUDE_DIRS}\third_party\libyuv\include)
+include_directories(${LIBWEBRTC_INCLUDE_DIRS})
+add_definitions(${LIBWEBRTC_DEFINITIONS})
+
+
+
+
+ADD_DEFINITIONS(
+-DWIN32
+-D_WINDOWS
+-DOATPP_DISABLE_ENV_OBJECT_COUNTERS
+-DOATPP_DISABLE_POOL_ALLOCATIONS
+-DOATPP_COMPAT_BUILD_NO_THREAD_LOCAL
+-DOATPP_DISABLE_LOGV
+-DOATPP_DISABLE_LOGD
+-DOATPP_DISABLE_LOGI
+-DOATPP_DISABLE_LOGW
+-DOATPP_DISABLE_LOGE
+-DWEBRTC_WIN=1
+-D_CRT_SECURE_NO_WARNINGS
+-DNOMINMAX
+-DWIN32_LEAN_AND_MEAN
+-DUSE_AURA=1
+-DNO_TCMALLOC
+-DFULL_SAFE_BROWSING
+-DSAFE_BROWSING_CSD
+-DSAFE_BROWSING_DB_LOCAL
+-DCHROMIUM_BUILD
+-D_HAS_EXCEPTIONS=0
+-D__STD_C
+-D_CRT_RAND_S
+-D_CRT_SECURE_NO_DEPRECATE
+-D_SCL_SECURE_NO_DEPRECATE
+-D_ATL_NO_OPENGL
+-DCERT_CHAIN_PARA_HAS_EXTRA_FIELDS
+-DPSAPI_VERSION=2
+-D_SECURE_ATL
+-D_USING_V110_SDK71_
+-DWINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP
+-D_UNICODE
+-DUNICODE
+-DNTDDI_VERSION=NTDDI_WIN10_RS2
+-D_WIN32_WINNT=0x0A00
+-DWINVER=0x0A00
+
+-DDYNAMIC_ANNOTATIONS_ENABLED=1
+-DWTF_USE_DYNAMIC_ANNOTATIONS=1
+-D_HAS_ITERATOR_DEBUGGING=0
+-DWEBRTC_ENABLE_PROTOBUF=1
+-DWEBRTC_INCLUDE_INTERNAL_AUDIO_DEVICE
+-DRTC_ENABLE_VP9
+-DHAVE_SCTP
+-DWEBRTC_NON_STATIC_TRACE_EVENT_HANDLERS=1
+-DABSL_ALLOCATOR_NOTHROW=1
+-DGTEST_API_=
+-DGTEST_HAS_POSIX_RE=0
+-DGTEST_LANG_CXX11=1
+-DGTEST_HAS_TR1_TUPLE=0
+-DGTEST_HAS_ABSL=1
+-DHAVE_WEBRTC_VIDEO
+-D_CONSOLE
+#################################relase ############
+-D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+# WIN32
+# _WINDOWS
+# OATPP_DISABLE_ENV_OBJECT_COUNTERS
+# OATPP_DISABLE_POOL_ALLOCATIONS
+# OATPP_COMPAT_BUILD_NO_THREAD_LOCAL
+# OATPP_DISABLE_LOGV
+# OATPP_DISABLE_LOGD
+# OATPP_DISABLE_LOGI
+# OATPP_DISABLE_LOGW
+# OATPP_DISABLE_LOGE
+# WEBRTC_WIN=1
+# _CRT_SECURE_NO_WARNINGS
+# NOMINMAX
+# WIN32_LEAN_AND_MEAN
+# USE_AURA=1
+# NO_TCMALLOC
+# FULL_SAFE_BROWSING
+# SAFE_BROWSING_CSD
+# SAFE_BROWSING_DB_LOCAL
+# CHROMIUM_BUILD
+# _HAS_EXCEPTIONS=0
+# __STD_C
+# _CRT_RAND_S
+# _CRT_SECURE_NO_DEPRECATE
+# _SCL_SECURE_NO_DEPRECATE
+# _ATL_NO_OPENGL
+# CERT_CHAIN_PARA_HAS_EXTRA_FIELDS
+# PSAPI_VERSION=2
+# _SECURE_ATL
+# _USING_V110_SDK71_
+# WINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP
+# _UNICODE
+# UNICODE
+# NTDDI_VERSION=NTDDI_WIN10_RS2
+# _WIN32_WINNT=0x0A00
+# WINVER=0x0A00
+# DYNAMIC_ANNOTATIONS_ENABLED=1
+# WTF_USE_DYNAMIC_ANNOTATIONS=1
+# _HAS_ITERATOR_DEBUGGING=0
+# WEBRTC_ENABLE_PROTOBUF=1
+# WEBRTC_INCLUDE_INTERNAL_AUDIO_DEVICE
+# RTC_ENABLE_VP9
+# HAVE_SCTP
+# WEBRTC_NON_STATIC_TRACE_EVENT_HANDLERS=1
+# ABSL_ALLOCATOR_NOTHROW=1
+# GTEST_API_=
+# GTEST_HAS_POSIX_RE=0
+# GTEST_LANG_CXX11=1
+# GTEST_HAS_TR1_TUPLE=0
+# GTEST_HAS_ABSL=1
+# HAVE_WEBRTC_VIDEO
+# _CONSOLE
+)
+
+
+
+#ADD_DEFINITIONS(-D_DEBUG)
+
+
+
+
+
+
+
+
+
+if(MSVC)
+        set(rtc_PLATFORM_DEPS
+                w32-pthreads)
+endif()
+
+set(rtc_HEADERS
+          capture.h
+         crtc.h
+         dc-capture.h 
+         obfuscate.h
+         window-helpers.h
+	)
+
+set(rtc_SOURCES
+          capture.cpp
+        crtc.c
+        dc-capture.c 
+        obfuscate.c
+        window-helpers.c
+        plugin-main.c
+	 )
+
+add_library(${PROJECT_NAME} MODULE
+	${rtc_SOURCES}
+	${rtc_HEADERS}
+	)
+target_link_libraries(${PROJECT_NAME}
+        ${rtc_PLATFORM_DEPS}
+		${LIBWEBRTC_LIBRARIES}
+		gdiplus.lib
+ 
+advapi32.lib
+comdlg32.lib
+dbghelp.lib
+dnsapi.lib
+gdi32.lib
+msimg32.lib
+odbc32.lib
+odbccp32.lib
+oleaut32.lib
+shell32.lib
+shlwapi.lib
+user32.lib
+usp10.lib
+uuid.lib
+version.lib
+wininet.lib
+winmm.lib
+winspool.lib
+ws2_32.lib
+delayimp.lib
+kernel32.lib
+ole32.lib
+crypt32.lib
+iphlpapi.lib
+secur32.lib
+dmoguids.lib
+wmcodecdspuuid.lib
+amstrmid.lib
+msdmo.lib
+strmiids.lib
+d3d11.lib
+dxgi.lib
+	libobs
+	Dwmapi
+	ipc-util)
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "plugins")
+
+install_obs_plugin_with_data(${PROJECT_NAME} data)
+
+#add_subdirectory(graphics-hook)
+#add_subdirectory(get-graphics-offsets)
+#add_subdirectory(inject-helper)

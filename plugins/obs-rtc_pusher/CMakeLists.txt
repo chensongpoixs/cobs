@@ -1,5 +1,5 @@
-project(obs-rtc)
-message(STATUS  "obs-rtc")
+project(obs-rtc_pusher)
+message(STATUS  ${PROJECT_NAME})
 #if(DISABLE_WEBRTC)
 #	message(STATUS "RTC plugin disabled")
 #	return()
@@ -181,11 +181,11 @@ set(rtc_SOURCES
         plugin-main.c
 	 )
 
-add_library(obs-rtc MODULE
+add_library(${PROJECT_NAME} MODULE
 	${rtc_SOURCES}
 	${rtc_HEADERS}
 	)
-target_link_libraries(obs-rtc
+target_link_libraries(${PROJECT_NAME}
         ${rtc_PLATFORM_DEPS}
 		${LIBWEBRTC_LIBRARIES}
 		gdiplus.lib
@@ -225,9 +225,9 @@ dxgi.lib
 	libobs
 	Dwmapi
 	ipc-util)
-set_target_properties(obs-rtc PROPERTIES FOLDER "plugins")
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "plugins")
 
-install_obs_plugin_with_data(obs-rtc data)
+install_obs_plugin_with_data(${PROJECT_NAME} data)
 
 #add_subdirectory(graphics-hook)
 #add_subdirectory(get-graphics-offsets)
