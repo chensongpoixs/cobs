@@ -25,13 +25,14 @@ namespace chen {
 			return false;
 		}
 		// 默认值
-		set_string(ECI_MediaSoup_Host, "mediasoup_ip", "127.0.0.1");
-		set_uint32(ECI_MediaSoup_Http_Port, "mediasoup_http_port", 8888);
-		set_uint32(ECI_MediaSoup_WebSocket_Port, "mediasoup_websocket_port", 8888);
-		set_string(ECI_Room_Name, "room_name", "chensong");
-		set_string(ECI_Client_Name, "client_name", "test");
-		set_uint32(ECI_Video_Fps, "video_fps", 30);
-		set_uint32(ECI_WebSocket_Reconnect, "reconnect_timer", 10);
+		set_string(ECI_RtcHost, "rtc_ip", "127.0.0.1");
+		set_uint32(ECI_RtcHttpPort, "rtc_http_port", 9500);
+		set_uint32(ECI_RtcWebSocketPort,
+			   "rtc_websocket_port", 9500);
+		set_string(ECI_RoomName, "room_name", "chensong");
+		set_string(ECI_UserName, "client_name", "test");
+		set_uint32(ECI_VideoFps, "video_fps", 30);
+		set_uint32(ECI_WebSocketReconnect, "reconnect_timer", 10);
 		set_int32(ECI_ReconnectWait, "reconnect_wait", 0);
 		set_int32(ECI_ProduceVideo, "produce_video", 0);
 		set_uint32(ECI_OsgWebrtcFrame, "osg_webrtc_frame", 3);

@@ -1,4 +1,4 @@
-﻿#ifndef _C_CCLIENT_H_
+#ifndef _C_CCLIENT_H_
 #define _C_CCLIENT_H_
  
 #include "cnet_types.h"
@@ -80,8 +80,7 @@ namespace chen {
 
 	public:
 		bool init(uint32 gpu_index);
-		void Loop(const std::string& mediasoupIp, uint16_t port, const std::string& roomName, const std::string& clientName
-			, uint32_t reconnect_waittime);
+		void Loop();
 		void stop();
 
 		void Destory();
@@ -96,7 +95,11 @@ namespace chen {
 		bool webrtc_video(const webrtc::VideoFrame& frame);
 		bool webrtc_run();
 
-		void set_mediasoup_status_callback(cmediasoup::mediasoup_status_update_cb callback) { m_mediasoup_status_callback = callback ; }
+		void
+		set_rtc_status_callback(rtc_status_update_cb callback)
+		{
+			m_rtc_status_callback = callback;
+		}
 
 
 		void transportofferasner(bool send, bool success);
@@ -161,7 +164,7 @@ namespace chen {
 		void _osg_thread();
 		void _osg_copy_rgba_thread();
 	private:
-		void _mediasoup_status_callback(uint32 status, uint32 error = 0);
+		void _rtc_status_callback(uint32 status, uint32 error = 0);
 	private:
 		uint64			m_id;
 		bool			m_loaded;
@@ -199,7 +202,7 @@ namespace chen {
 
 		std::shared_ptr<DesktopCapture> 		m_desktop_capture_ptr;
 
-		cmediasoup::mediasoup_status_update_cb		m_mediasoup_status_callback;
+		rtc_status_update_cb		m_rtc_status_callback;
 		uint32							m_websocket_timer;
 		bool							m_send_produce_video_msg;
 	};

@@ -21,7 +21,7 @@
 #include "build_version.h"
 //#include "cdesktop_capture.h"
 #include "capture.h"
-namespace cmediasoup
+namespace chen
 {
 	using namespace chen;
 
@@ -42,16 +42,16 @@ namespace cmediasoup
 		}
 	}
 
-	cmediasoup_mgr::cmediasoup_mgr()
+	crtc_mgr::crtc_mgr()
 		: m_init(false)
-		, m_webrtc_pause(false)
+		, m_rtc_pause(false)
 		, m_client_ptr(NULL)
 	{
 	}
-	cmediasoup_mgr::~cmediasoup_mgr()
+	crtc_mgr::~crtc_mgr()
 	{
 	}
-	bool cmediasoup_mgr::global_init()
+	bool crtc_mgr::global_init()
 	{
 		using namespace chen;
 		printf("Log init ...\n");
@@ -92,13 +92,13 @@ namespace cmediasoup
 		mediasoupclient::Initialize();
 		return true;
 	}
-	void cmediasoup_mgr::global_destroy()
+	void crtc_mgr::global_destroy()
 	{
 		mediasoupclient::Cleanup();
 		SYSTEM_LOG("mediasoup destroy ok !!!");
 		LOG::destroy();
 	}
-	bool cmediasoup_mgr::init(uint32_t gpu_index)
+	bool crtc_mgr::init(uint32_t gpu_index)
 	{
 		//if (!m_stoped)
 		if (m_client_ptr)
@@ -114,18 +114,18 @@ namespace cmediasoup
 		m_client_ptr = client_ptr;
 		return m_init;
 	}
-	void cmediasoup_mgr::startup(const char* mediasoupIp, uint16_t port
+	void crtc_mgr::startup(const char *rtcIp, uint16_t port
 		, const char* roomName, const char* clientName
 		, uint32_t reconnect_waittime)
 	{
-		m_mediasoup_ip = mediasoupIp;
-		m_mediasoup_port = port;
+		m_rtc_ip = rtcIp;
+		m_rtc_port = port;
 		m_room_name = roomName;
 		m_client_name = clientName;
 		m_reconnect_wait = reconnect_waittime;
-		m_thread = std::thread(&cmediasoup_mgr::_mediasoup_thread, this);
+		m_thread = std::thread(&crtc_mgr::_rtc_thread, this);
 	}
-	void cmediasoup_mgr::destroy()
+	void crtc_mgr::destroy()
 	{
 		if (!m_client_ptr)
 		{
@@ -144,7 +144,8 @@ namespace cmediasoup
 		m_init  = false;
 	}
 
-	void cmediasoup_mgr::webrtc_video(unsigned char * rgba_ptr, uint32_t fmt, int width, int height)
+	void crtc_mgr:: rtc_video(unsigned char *rgba_ptr, uint32_t fmt,
+				    int width, int height)
 	{
 		if (!m_init|| !m_client_ptr)
 		{
@@ -152,14 +153,15 @@ namespace cmediasoup
 			//WARNING_EX_LOG("mediasoup_mgr  not init !!!");
 			return;
 		}
-		if (m_webrtc_pause)
+		if (m_rtc_pause)
 		{
 			return;
 		}
 		cclient* client_ptr = static_cast<cclient*>(m_client_ptr);
 		client_ptr->webrtc_video(rgba_ptr, fmt, width, height);
 	}
-	void cmediasoup_mgr::webrtc_video(unsigned char * y_ptr, unsigned char * uv_ptr, uint32_t fmt, int width, int height)
+	void crtc_mgr:: rtc_video(unsigned char *y_ptr, unsigned char *uv_ptr,
+				    uint32_t fmt, int width, int height)
 	{
 		if (!m_init || !m_client_ptr)
 		{
@@ -167,7 +169,7 @@ namespace cmediasoup
 			//WARNING_EX_LOG("mediasoup_mgr  not init !!!");
 			return;
 		}
-		if (m_webrtc_pause)
+		if (m_rtc_pause)
 		{
 			return;
 		}
@@ -175,7 +177,8 @@ namespace cmediasoup
 		cclient* client_ptr = static_cast<cclient*>(m_client_ptr);
 		client_ptr->webrtc_video(y_ptr, uv_ptr, fmt, width, height);
 	}
-	void cmediasoup_mgr::webrtc_texture(void * texture, uint32_t fmt, int width, int height)
+	void crtc_mgr:: rtc_texture(void *texture, uint32_t fmt, int width,
+				      int height)
 	{
 		if (!m_init || !m_client_ptr)
 		{
@@ -183,7 +186,7 @@ namespace cmediasoup
 			//WARNING_EX_LOG("mediasoup_mgr  not init !!!");
 			return;
 		}
-		if (m_webrtc_pause)
+		if (m_rtc_pause)
 		{
 			return;
 		}
@@ -191,15 +194,16 @@ namespace cmediasoup
 		cclient* client_ptr = static_cast<cclient*>(m_client_ptr);
 		client_ptr->webrtc_texture(texture, fmt, width, height);
 	}
-	void cmediasoup_mgr::webrtc_pause()
+	void crtc_mgr:: rtc_pause()
 	{
-		m_webrtc_pause = true;
+		m_rtc_pause = true;
 	}
-	void cmediasoup_mgr::webrtc_resume()
+	void crtc_mgr::rtc_resume()
 	{
-		m_webrtc_pause = false;
+		m_rtc_pause = false;
 	}
-	void cmediasoup_mgr::set_mediasoup_status_callback(mediasoup_status_update_cb callback)
+	void crtc_mgr::set_rtc_status_callback(
+		rtc_status_update_cb callback)
 	{
 		if (!m_client_ptr)
 		{
@@ -207,9 +211,9 @@ namespace cmediasoup
 		}
 		cclient* client_ptr = static_cast<cclient*>(m_client_ptr);
 		
-		client_ptr->set_mediasoup_status_callback(callback);
+		client_ptr->set_rtc_status_callback(callback);
 	}
-	bool cmediasoup_mgr::mediasoup_run()
+	bool crtc_mgr::rtc_run()
 	{
 		if (!m_init || !m_client_ptr)
 		{
@@ -222,20 +226,23 @@ namespace cmediasoup
 		return client_ptr->webrtc_run();
 		//return true;
 	}
-
-	void cmediasoup_mgr::_mediasoup_thread()
+	const char *crtc_mgr::get_rtc_roomname() const
+	{
+		return g_cfg.get_string(ECI_RoomName).c_str();
+	}
+	const char *crtc_mgr::get_rtc_username() const
+	{
+		return g_cfg.get_string(ECI_UserName).c_str();
+	}
+	void crtc_mgr::_rtc_thread()
 	{
 		if (!m_client_ptr)
 		{
-			ERROR_EX_LOG("[info]mediasoupip = %s, port = %u, roomname = %s, client_name = %s, reconnectwiat = %u\n", m_mediasoup_ip.c_str(),
-				m_mediasoup_port, m_room_name.c_str(), m_client_name.c_str(), m_reconnect_wait);
-
+			 
 			return;
 		}
-		SYSTEM_LOG("[info]mediasoupip = %s, port = %u, roomname = %s, client_name = %s, reconnectwiat = %u\n", m_mediasoup_ip.c_str(),
-			m_mediasoup_port, m_room_name.c_str(), m_client_name.c_str(), m_reconnect_wait);
-		cclient* client_ptr = static_cast<cclient*>(m_client_ptr);
-		client_ptr->Loop(m_mediasoup_ip, m_mediasoup_port, m_room_name, m_client_name, m_reconnect_wait);
+		 cclient* client_ptr = static_cast<cclient*>(m_client_ptr);
+		client_ptr->Loop();
 		SYSTEM_LOG("[%s][%d] mediasoup_thread exit !!! \n", __FUNCTION__, __LINE__);
 	}
 }

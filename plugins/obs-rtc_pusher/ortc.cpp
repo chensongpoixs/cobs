@@ -118,7 +118,9 @@ namespace mediasoupclient
 			// mimeType is mandatory.
 			if (mimeTypeIt == codec.end() || !mimeTypeIt->is_string())
 			{
-				ERROR_EX_LOG("missing codec.mimeType");
+				ERROR_EX_LOG(
+					"missing codec.mimeType [codec = %s]",
+					codec.dump().c_str());
 				return false;
 			}
 
@@ -175,7 +177,7 @@ namespace mediasoupclient
 
 				if (!value.is_string() && !value.is_number() && value != nullptr)
 				{
-					ERROR_EX_LOG("invalid codec parameter");
+					ERROR_EX_LOG("invalid codec parameter [key = %s][value = %s]", key.c_str(), value.dump().c_str());
 					return false;
 				}
 

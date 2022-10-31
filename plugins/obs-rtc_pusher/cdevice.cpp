@@ -244,11 +244,15 @@ namespace chen {
 				nullptr /*audio_processing*/);
 
 
-			printf("[%s][%d] config.sdp_semantics = %d\n",  __FUNCTION__, __LINE__, config.sdp_semantics);
+			NORMAL_EX_LOG("[%s][%d] config.sdp_semantics = %d\n",
+				      __FUNCTION__, __LINE__,
+				      config.sdp_semantics);
 
 			// Create the webrtc::Peerconnection.
 			 pc = peerConnectionFactory->CreatePeerConnection(config, nullptr, nullptr, privateListener);
-			 printf("[%s][%d] config.sdp_semantics = %d\n",  __FUNCTION__, __LINE__, config.sdp_semantics);
+			NORMAL_EX_LOG("[%s][%d] config.sdp_semantics = %d\n",
+				      __FUNCTION__, __LINE__,
+				      config.sdp_semantics);
 		}
 		~cpeerconnection()
 		{

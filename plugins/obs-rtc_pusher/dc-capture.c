@@ -166,18 +166,7 @@ void dc_capture_capture(unsigned char *rgba_ptr, BITMAPINFO bmi, int32_t width,
 		return;
 	}
 
-	/*if (!out_file_ptr)
-	{
-		out_file_ptr = fopen("./chensong.yuv", "wb+");
-	}
-	if (out_file_ptr)
-	{
-		fwrite(rgba_ptr,
-		       1920* 1080  * 3,
-			 1,
-			 out_file_ptr);
-		fflush(out_file_ptr);
-	}*/
+	
 	StretchDIBits(hdc, 0, 0, width, height, 0, 0, width, height,
 		      rgba_ptr,
 		      (BITMAPINFO *)&bmi.bmiHeader, DIB_RGB_COLORS, SRCCOPY);

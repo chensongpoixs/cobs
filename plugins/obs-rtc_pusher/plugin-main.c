@@ -2,7 +2,7 @@
 #include <obs-module.h>
 #include <util/windows/win-version.h>
 #include <util/platform.h>
-
+#include "crtc_pusher.h"
 OBS_DECLARE_MODULE()
 OBS_MODULE_USE_DEFAULT_LOCALE("rtc_pusher", "en-US")
 MODULE_EXPORT const char *obs_module_description(void)
@@ -11,7 +11,7 @@ MODULE_EXPORT const char *obs_module_description(void)
 }
 
  
-extern struct obs_source_info window_capture_info;
+extern struct obs_source_info rtc_pusher_info;
  
 
 extern bool cached_versions_match(void);
@@ -29,7 +29,7 @@ extern bool load_graphics_offsets(bool is32bit, bool use_hook_address_cache,
 
 static const bool use_hook_address_cache = false;
 
- 
+static bool g_global_init = false; 
 
 
 
@@ -38,6 +38,13 @@ bool wgc_supported = false;
 
 bool obs_module_load(void)
 {
+	if (!!!g_global_init)
+	{
+		g_global_init = true;
+		c_rtc_global_init();
+	}
+	
+
 	struct win_version_info ver;
 	bool win8_or_above = false;
 	char *config_dir;
@@ -63,12 +70,17 @@ bool obs_module_load(void)
 	{
 		wgc_supported = win_version_compare(&ver, &win1903) >= 0;
 	} */
-	obs_register_source(&window_capture_info);
+	obs_register_source(&rtc_pusher_info);
 	 
 	return true;
 }
 
 void obs_module_unload(void)
 {
+	if (!!g_global_init)
+	{
+		g_global_init = false;
+		 c_rtc_global_destroy();
+	}
 	//wait_for_hook_initialization();
 }

@@ -10,6 +10,7 @@ purpose:		assertion macros
 #include "rtc_base/logging.h"
 #include "rtc_base/time_utils.h"
 #include "third_party/libyuv/include/libyuv.h"
+#include "cmediasoup_mgr.h"
 //#include "cclient.h"
 #include "capture.h"
 
@@ -96,7 +97,7 @@ void DesktopCapture::OnCaptureResult(webrtc::DesktopCapturer::Result result,
 			std::chrono::system_clock::now().time_since_epoch())
 			.count();
 	if (timestamp_curr - timestamp > 1000) {
-		RTC_LOG(LS_INFO) << "FPS: " << cnt;
+		//RTC_LOG(LS_INFO) << "FPS: " << cnt;
 		cnt = 0;
 		timestamp = timestamp_curr;
 	}
@@ -188,25 +189,23 @@ void DesktopCapture::StopCapture()
 
 //////////////////////////////////////////////////////
 
-
 std::unique_ptr<chen::DesktopCapture> desktop_capture_ptr = NULL;
- void DLLIMPORT cpp_capture_init(void *data)
+static chen::crtc_mgr g_rtc_mgr;
+void   cpp_capture_init(void *data)
 {
-	 desktop_capture_ptr.reset(chen::DesktopCapture::Create(30, 0));
-	if (desktop_capture_ptr)
-	{
-		 desktop_capture_ptr->SetData(data);
-	}
- }
-void DLLIMPORT cpp_capture_startup()
-{
-	if (desktop_capture_ptr)
-	{
-
-	desktop_capture_ptr->StartCapture();
+	desktop_capture_ptr.reset(chen::DesktopCapture::Create(30, 0));
+	if (desktop_capture_ptr) {
+		desktop_capture_ptr->SetData(data);
 	}
 }
-void DLLIMPORT cpp_capture_destroy()
+void   cpp_capture_startup()
+{
+	if (desktop_capture_ptr) {
+
+		desktop_capture_ptr->StartCapture();
+	}
+}
+void   cpp_capture_destroy()
 {
 	desktop_capture_ptr->StopCapture();
 }
@@ -218,15 +217,101 @@ void c_set_video_callback(send_video_callback callback)
 {
 	cpp_set_video_callback(callback);
 }
-void DLLIMPORT c_capture_init(void * data)
+void   c_capture_init(void *data)
 {
 	cpp_capture_init(data);
 }
-void DLLIMPORT c_capture_startup()
+void   c_capture_startup()
 {
 	cpp_capture_startup();
 }
-void DLLIMPORT c_capture_destroy()
+void   c_capture_destroy()
 {
 	cpp_capture_destroy();
+}
+
+bool   cpp_rtc_global_init()
+{
+	return g_rtc_mgr.global_init();
+}
+bool   cpp_rtc_global_destroy()
+{
+	 g_rtc_mgr.global_destroy();
+	return true;
+}
+bool   cpp_rtc_init()
+{
+	return g_rtc_mgr.init(0);
+}
+
+void   cpp_rtc_startup()
+{
+	g_rtc_mgr.startup();
+}
+
+void   cpp_rtc_destroy()
+{
+	g_rtc_mgr.destroy();
+}
+void   cpp_set_rtc_status_callback(rtc_status_callback callback)
+{
+	g_rtc_mgr.set_rtc_status_callback(callback);
+}
+
+void   cpp_rtc_video(unsigned char *rgba_ptr, uint32_t fmt, int width,
+			     int height)
+{
+	g_rtc_mgr.rtc_video(rgba_ptr, fmt, width, height);
+}
+
+const char *  cpp_get_rtc_roomname()
+{
+	return g_rtc_mgr.get_rtc_roomname();
+}
+const char *  cpp_get_rtc_username()
+{
+	return g_rtc_mgr.get_rtc_username();
+}
+
+bool     c_rtc_global_init()
+{
+	return cpp_rtc_global_init();
+}
+bool   c_rtc_global_destroy()
+{
+	return cpp_rtc_global_destroy();
+}
+bool   c_rtc_init()
+{
+	return cpp_rtc_init();
+}
+
+void   c_rtc_startup()
+{
+	cpp_rtc_startup();
+}
+
+void   c_rtc_destroy()
+{
+	cpp_rtc_destroy();
+}
+void c_set_rtc_status_callback(rtc_status_callback callback)
+{
+	cpp_set_rtc_status_callback(callback);
+}
+
+void c_rtc_video(unsigned char *rgba_ptr, uint32_t fmt, int width,
+			   int height)
+{
+	cpp_rtc_video(rgba_ptr, fmt, width, height);
+}
+
+
+const char *c_get_rtc_roomname()
+{
+	return cpp_get_rtc_roomname();
+}
+const char *c_get_rtc_username()
+{
+	return cpp_get_rtc_username();
 }

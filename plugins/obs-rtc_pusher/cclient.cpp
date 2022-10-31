@@ -86,8 +86,8 @@ namespace chen {
 		, m_stoped(false)
 		, m_status(EMediasoup_None)
 		, m_produce_consumer(true)
-		, m_ui_type(EUI_None)
-		, m_mediasoup_status_callback(nullptr)
+		, m_ui_type(EUI_None),
+		  m_rtc_status_callback(nullptr)
 		, m_websocket_timer(0)
 		, m_send_produce_video_msg(false)
 		, m_desktop_capture_ptr(NULL){}
@@ -138,28 +138,7 @@ namespace chen {
 		m_server_notification_protoo_msg_call.insert(std::make_pair(S2C_RtpCapabilitiesUpdate, &cclient::handler_rtp_capabilities));
 		SYSTEM_LOG("client init ok !!!");
 		m_webrtc_connect = false;
-		/*uint32 osg_webrtc_frame = g_cfg.get_uint32(ECI_OsgWebrtcFrame);
-		if (osg_webrtc_frame == 0)
-		{
-			osg_webrtc_frame = WEBRTC_FRAMES;
-		}
-		SYSTEM_LOG("osg webrtc frames = %u", osg_webrtc_frame);
-		m_frame_rgba_vec.reserve(osg_webrtc_frame);
-		for (uint32 i = 0; i < osg_webrtc_frame; ++i)
-		{
-
-			m_frame_rgba_vec[i].m_rgba_ptr = new unsigned char[OSG_RGBA_WIDTH * OSG_RGBA_HEIGHT * 4];
-			if (!m_frame_rgba_vec[i].m_rgba_ptr)
-			{
-				ERROR_EX_LOG("alloc osg rgab failed !!!");
-				return false;
-			}
-		}
-		m_osg_frame = 0;
-		m_webrtc_frame = 0;
-		m_osg_copy_thread = std::thread(&cclient::_osg_copy_rgba_thread, this);*/
-		//m_osg_work_thread = std::thread(&cclient::_osg_thread, this);
-		//SYSTEM_LOG("osg video capturer thread ok !!!");
+		
 		if (g_cfg.get_int32(ECI_DesktopCapture))
 		{
 			m_desktop_capture_ptr.reset( DesktopCapture::Create(60, 0));
@@ -181,8 +160,7 @@ namespace chen {
 		m_stoped = true;
 		m_webrtc_connect = false;
 	}
-	void cclient::Loop(const std::string & mediasoupIp, uint16_t port, const std::string & roomName, const std::string & clientName
-	,	uint32_t websocket_reconnect_waittime)
+	void cclient::Loop( )
 	{
 		if (m_desktop_capture_ptr)
 		{
@@ -191,13 +169,13 @@ namespace chen {
 		// mediasoup_ip, mediasoup_port ;
 		// room_name , client_id;
 		//  Reconnect_waittime, 
-		std::string ws_url = "ws://" + mediasoupIp + ":" + std::to_string(port) + "/?roomId=" + roomName + "&peerId=" + clientName;//ws://127.0.0.1:8888/?roomId=chensong&peerId=xiqhlyrn", "http://127.0.0.1:8888")
+		std::string ws_url = "ws://" + g_cfg.get_string(ECI_RtcHost) + ":" + std::to_string(g_cfg.get_uint32(ECI_RtcWebSocketPort)) + "/?roomId=" + g_cfg.get_string(ECI_RoomName) + "&peerId=" + g_cfg.get_string(ECI_UserName);//ws://127.0.0.1:8888/?roomId=chensong&peerId=xiqhlyrn", "http://127.0.0.1:8888")
 		//std::string origin = "http://" + mediasoupIp + ":" + std::to_string(port);
 		std::list<std::string> msgs;
 		time_t cur_time = ::time(NULL);
 		NORMAL_EX_LOG("ws_url = %s", ws_url.c_str());
-		m_room_name = roomName;
-		m_client_name = clientName;
+		m_room_name = g_cfg.get_string(ECI_RoomName);
+		m_client_name = g_cfg.get_string(ECI_UserName);
 		std::chrono::steady_clock::time_point cur_time_ms;
 		std::chrono::steady_clock::time_point pre_time = std::chrono::steady_clock::now();
 		std::chrono::steady_clock::duration dur;
@@ -221,7 +199,9 @@ namespace chen {
 					++m_websocket_timer;
 					if (m_websocket_timer > g_cfg.get_uint32(ECI_WebSocketTimers))
 					{
-						_mediasoup_status_callback(EMediasoup_WebSocket_Init, 1);
+						_rtc_status_callback(
+							EMediasoup_WebSocket_Init,
+							1);
 					}
 					continue;;
 				}
@@ -237,7 +217,8 @@ namespace chen {
 					continue;
 				}
 				m_websocket_timer = 0;
-				_mediasoup_status_callback(EMediasoup_WebSocket_Init, 0);
+				_rtc_status_callback(EMediasoup_WebSocket_Init,
+						     0);
 				m_status = EMediasoup_WebSocket;
 				// 1.1 获取服务器的处理能力
 				// 2. connect failed wait 5s..
@@ -319,33 +300,7 @@ namespace chen {
 					m_status = EMediasoup_Reset;
 					msgs.clear();
 				}
-				/*if (m_reconnect_wait && g_cfg.get_int32(ECI_ReconnectWait) > 0)
-				{
-					if (m_reconnect_wait < ::time(NULL))
-					{
-						m_status = EMediasoup_Reset;
-						m_reconnect_wait = 0;
-					}
-				}*/
-				/*if (m_status == EMediasoup_WebSocket && g_cfg.get_int32(ECI_ProduceVideo) > 0 && m_webrtc_connect)
-				{
-					if (m_produce_video < ::time(NULL))
-					{
-						static bool video_produce = true;
-						m_produce_video = ::time(NULL) + g_cfg.get_int32(ECI_ProduceVideo);
-						if (video_produce)
-						{
-							m_send_transport->Pause();
-							video_produce = false;
-						}
-						else
-						{
-							m_send_transport->Resume();
-							video_produce = true;
-						}
-						
-					}
-				}*/
+				
 				break;
 			}
 			case EMediasoup_WebSocket_Close:
@@ -360,7 +315,10 @@ namespace chen {
 			{
 				// 10 sleep 
 				// TODO@chensong 20220208 ---> 增加时间
-				std::this_thread::sleep_for(std::chrono::milliseconds(websocket_reconnect_waittime));
+				std::this_thread::sleep_for(
+					std::chrono::milliseconds(
+						g_cfg.get_uint32(
+							ECI_WebSocketReconnect)));
 				m_status = EMediasoup_WebSocket_Init;
 				break;
 			}
@@ -386,8 +344,11 @@ namespace chen {
 				// 有人的时候推流 
 				//m_produce_consumer = false;
 				//m_ui_type = EUI_None;
-				cur_time = ::time(NULL) + websocket_reconnect_waittime;
-				NORMAL_EX_LOG("reconnect  wait [%u s]  ...", websocket_reconnect_waittime);
+				cur_time = ::time(NULL) +
+					   g_cfg.get_uint32(ECI_ReconnectWait);
+				NORMAL_EX_LOG(
+					"reconnect  wait [%u s]  ...",
+					g_cfg.get_uint32(ECI_ReconnectWait));
 				m_status = EMediasoup_Wait;
 				break;
 			}
@@ -574,8 +535,8 @@ namespace chen {
 	}
 	void cclient::Destory()
 	{
-		SYSTEM_LOG("mediasoup clinet destroy ...");
-		m_mediasoup_status_callback = nullptr;
+		SYSTEM_LOG("rtc clinet destroy ...");
+		m_rtc_status_callback = nullptr;
 		if (m_desktop_capture_ptr)
 		{
 			m_desktop_capture_ptr->SetClientCallback(NULL);
@@ -678,7 +639,8 @@ namespace chen {
 			++m_websocket_timer;
 			if (m_websocket_timer > g_cfg.get_uint32(ECI_WebSocketTimers))
 			{
-				_mediasoup_status_callback(EMediasoup_WebSocket_Init, 1);
+				_rtc_status_callback(EMediasoup_WebSocket_Init,
+						     1);
 			}
 		}
 	}
@@ -689,7 +651,7 @@ namespace chen {
 		++m_websocket_timer;
 		if (m_websocket_timer > g_cfg.get_uint32(ECI_WebSocketTimers))
 		{
-			_mediasoup_status_callback(EMediasoup_WebSocket_Init, 1);
+			_rtc_status_callback(EMediasoup_WebSocket_Init, 1);
 		}
 		
 
@@ -698,8 +660,8 @@ namespace chen {
 	{
 		nlohmann::json data =
 		{
-			{"user_name", g_cfg.get_string(ECI_Client_Name)},
-			{"room_name", g_cfg.get_string(ECI_Room_Name)}
+			{"user_name", g_cfg.get_string(ECI_UserName)},
+			{"room_name", g_cfg.get_string(ECI_RoomName)}
 
 		};
 		if (!_send_request_mediasoup(C2S_Login, data))
@@ -888,7 +850,8 @@ namespace chen {
 		if (!m_send_produce_video_msg)
 		{
 			m_send_produce_video_msg = true;
-			_mediasoup_status_callback(EMediasoup_Request_Produce_Webrtc_Transport, 0);
+			_rtc_status_callback(
+				EMediasoup_Request_Produce_Webrtc_Transport, 0);
 		}
 		return m_send_transport->webrtc_video(rgba, fmt, width, height);
 		 
@@ -922,7 +885,8 @@ namespace chen {
 		if (!m_send_produce_video_msg)
 		{
 			m_send_produce_video_msg = true;
-			_mediasoup_status_callback(EMediasoup_Request_Produce_Webrtc_Transport, 0);
+			_rtc_status_callback(
+				EMediasoup_Request_Produce_Webrtc_Transport, 0);
 		}
 		return m_send_transport->webrtc_texture(texture, fmt, width, height);
 	}
@@ -954,7 +918,8 @@ namespace chen {
 		if (!m_send_produce_video_msg)
 		{
 			m_send_produce_video_msg = true;
-			_mediasoup_status_callback(EMediasoup_Request_Produce_Webrtc_Transport, 0);
+			_rtc_status_callback(
+				EMediasoup_Request_Produce_Webrtc_Transport, 0);
 		}
 		return m_send_transport->webrtc_video(y_ptr, uv_ptr, fmt, width, height);
 
@@ -976,7 +941,8 @@ namespace chen {
 		if (!m_send_produce_video_msg)
 		{
 			m_send_produce_video_msg = true;
-			_mediasoup_status_callback(EMediasoup_Request_Produce_Webrtc_Transport, 0);
+			_rtc_status_callback(
+				EMediasoup_Request_Produce_Webrtc_Transport, 0);
 		}
 		return m_send_transport->webrtc_video(frame);
 	}
@@ -1101,7 +1067,7 @@ namespace chen {
 		m_recv_transport->webrtc_create_all_wait_consumer();
 		m_produce_video = ::time(NULL) + 8;
 		m_webrtc_connect = true;
-		//_mediasoup_status_callback(EMediasoup_Request_Produce_Webrtc_Transport, 0);
+		//_rtc_status_callback(EMediasoup_Request_Produce_Webrtc_Transport, 0);
 		return true;
 		return true;
 	}
@@ -1199,7 +1165,7 @@ namespace chen {
 		m_recv_transport->webrtc_create_all_wait_consumer();
 		m_produce_video = ::time(NULL) +8;
 		m_webrtc_connect = true;
-		//_mediasoup_status_callback(EMediasoup_Request_Produce_Webrtc_Transport, 0);
+		//_rtc_status_callback(EMediasoup_Request_Produce_Webrtc_Transport, 0);
  		return true;
 	}
 
@@ -1213,7 +1179,7 @@ namespace chen {
 			m_reconnect_wait = ::time(NULL) + g_cfg.get_int32(ECI_ReconnectWait);
 		}*/
 		//m_status = EMediasoup_WebSocket; 
-		_mediasoup_status_callback(EMediasoup_Request_Join_Room, 0);
+		_rtc_status_callback(EMediasoup_Request_Join_Room, 0);
 		return true;
 	}
 
@@ -1411,13 +1377,13 @@ namespace chen {
 			 
 		}*/
 	}
-	void cclient::_mediasoup_status_callback(uint32 status, uint32 error)
+	void cclient::_rtc_status_callback(uint32 status, uint32 error)
 	{
 		NORMAL_EX_LOG("status = %u, error = %u", status, error);
-		if (m_mediasoup_status_callback)
+		if (m_rtc_status_callback)
 		{
 
-			m_mediasoup_status_callback(status, error);
+			m_rtc_status_callback(status, error);
 		}
 		else
 		{

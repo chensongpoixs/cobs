@@ -1,4 +1,4 @@
-﻿/***********************************************************************************************
+/***********************************************************************************************
 			created: 		2019-05-01
 
 			author:			chensong
@@ -13,13 +13,13 @@
 namespace chen {
 	enum ECNGIndex
 	{
-		ECI_MediaSoup_Host = 0,
-		ECI_MediaSoup_Http_Port,
-		ECI_MediaSoup_WebSocket_Port,
-		ECI_Room_Name,
-		ECI_Client_Name,
-		ECI_Video_Fps,
-		ECI_WebSocket_Reconnect,
+		ECI_RtcHost = 0,
+		ECI_RtcHttpPort,
+		ECI_RtcWebSocketPort,
+		ECI_RoomName,
+		ECI_UserName,
+		ECI_VideoFps,
+		ECI_WebSocketReconnect,
 		ECI_ReconnectWait,
 		ECI_ProduceVideo,
 		ECI_OsgWebrtcFrame,

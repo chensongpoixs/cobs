@@ -6,7 +6,7 @@
 #include <windows.h>
 #include "window-helpers.h"
 #include "obfuscate.h"
-
+#include "crtc_pusher.h"
 static inline void encode_dstr(struct dstr *str)
 {
 	dstr_replace(str, "#", "#22");
@@ -371,7 +371,9 @@ static HWND first_window(enum window_search_mode mode, HWND *parent,
 void fill_window_list(obs_property_t *p, enum window_search_mode mode,
 		      add_window_cb callback)
 {
-	HWND parent;
+	obs_property_list_add_string(p, c_get_rtc_roomname(),
+				     c_get_rtc_username());
+	/*HWND parent;
 	bool use_findwindowex = false;
 
 	HWND window = first_window(mode, &parent, &use_findwindowex);
@@ -379,7 +381,7 @@ void fill_window_list(obs_property_t *p, enum window_search_mode mode,
 	while (window) {
 		add_window(p, window, callback);
 		window = next_window(window, mode, &parent, use_findwindowex);
-	}
+	}*/
 }
 
 static int window_rating(HWND window, enum window_priority priority,

@@ -1,4 +1,4 @@
-﻿/***********************************************************************************************
+/***********************************************************************************************
 						created: 		2018-10-02
 
 						author:			chensong
@@ -295,7 +295,7 @@ namespace chen {
 		if ( (m_storage_type & ELogStoragePost) && log_item_ptr->data.length() > 0)
 		{
 			//m_stream  << "\n";
-			////std::string host =webrtc::g_cfg.get_string(webrtc::ECI_MediaSoup_Host) ;
+			////std::string host =webrtc::g_cfg.get_string(webrtc::ECI_RtcHost) ;
 			//httplib::Client cli(m_host, m_port);
 			//std::string url = "http://"+ m_host + ":" +std::to_string(m_port) +"/decoder/decoder.php";
 			//auto res = cli.Post(url.c_str(), m_stream.str().c_str(), "application/json");
