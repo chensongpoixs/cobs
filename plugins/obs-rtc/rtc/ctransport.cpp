@@ -64,7 +64,11 @@ namespace chen {
 
 		nlohmann::json iceParameters_ = iceParameters;
 		 
-		mediasoupclient::Sdp::RemoteSdp* removesdp_ptr = new mediasoupclient::Sdp::RemoteSdp(iceParameters_, iceCandidates, dtlsParameters, sctpParameters);
+		crtc_client::Sdp::RemoteSdp *removesdp_ptr =
+			new crtc_client::Sdp::RemoteSdp(iceParameters_,
+							    iceCandidates,
+							    dtlsParameters,
+							    sctpParameters);
 		m_remote_sdp.reset( removesdp_ptr );
 		m_transport_id = transport_id;
 		
@@ -84,7 +88,9 @@ namespace chen {
 
 		nlohmann::json  localSdpObject = sdptransform::parse(sdp);
 		// Get our local DTLS parameters.
-		nlohmann::json dtlsParameters = mediasoupclient::Sdp::Utils::extractDtlsParameters(localSdpObject);
+		nlohmann::json dtlsParameters =
+			crtc_client::Sdp::Utils::extractDtlsParameters(
+				localSdpObject);
 
 		// Set our DTLS role.
 		dtlsParameters["role"] = localDtlsRole;

@@ -1,3 +1,11 @@
+/***********************************************************************************************
+					created: 		2018-10-02
+
+					author:			chensong
+
+					purpose:		async_log
+************************************************************************************************/
+
 #ifndef _C_CCLIENT_H_
 #define _C_CCLIENT_H_
  
@@ -10,7 +18,7 @@
 //#include "crecv_transport.h"
 #include "csingleton.h"
 //#include "cdesktop_capture.h"
-#include "cmediasoup_mgr.h"
+#include "crtc_mgr.h"
 #include "cmsg_base_id.h"
 namespace chen {
 	class DesktopCapture;
@@ -129,6 +137,10 @@ namespace chen {
 		bool handler_connect_webrtc_transport(const  nlohmann::json & msg);
 
 		bool handler_produce_webrtc_transport(const  nlohmann::json & msg);
+
+		bool handler_join_room_update(const nlohmann::json &msg);
+
+
 		//bool _server_create_webrtc_transport(const  nlohmann::json & msg);
 		bool _server_connect_webrtc_transport(const  nlohmann::json & msg);
 

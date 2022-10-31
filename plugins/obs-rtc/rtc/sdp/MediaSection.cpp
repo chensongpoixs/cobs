@@ -15,8 +15,7 @@ using json = nlohmann::json;
 // Static functions declaration.
 static std::string getCodecName(const json& codec);
 
-namespace mediasoupclient
-{
+namespace crtc_client {
 	namespace Sdp
 	{
 		MediaSection::MediaSection(const json& iceParameters, const json& iceCandidates)
@@ -580,7 +579,7 @@ namespace mediasoupclient
 			this->mediaObject["setup"] = "actpass";
 		}
 	} // namespace Sdp
-} // namespace mediasoupclient
+} // namespace crtc_client
 
 // Private helpers used in this file.
 

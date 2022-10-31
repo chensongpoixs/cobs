@@ -3,9 +3,8 @@
 #include "json.hpp"
 #include <string>
 
-namespace mediasoupclient
-{
+namespace crtc_client {
 	nlohmann::json parseScalabilityMode(const std::string& scalabilityMode);
-} // namespace mediasoupclient
+} // namespace crtc_client
 
 #endif

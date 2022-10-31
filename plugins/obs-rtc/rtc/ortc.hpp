@@ -4,8 +4,7 @@
 #include "json.hpp"
 #include <string>
 
-namespace mediasoupclient
-{
+namespace crtc_client {
 	namespace ortc
 	{
 		bool validateRtpCapabilities(nlohmann::json& caps);
@@ -35,6 +34,6 @@ namespace mediasoupclient
 		bool canSend(const std::string& kind, const nlohmann::json& extendedRtpCapabilities);
 		bool canReceive(nlohmann::json& rtpParameters, const nlohmann::json& extendedRtpCapabilities);
 	} // namespace ortc
-} // namespace mediasoupclient
+} // namespace crtc_client
 
 #endif

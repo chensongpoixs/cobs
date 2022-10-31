@@ -6,8 +6,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace mediasoupclient
-{
+namespace crtc_client {
 	namespace Sdp
 	{
 		class RemoteSdp
@@ -76,6 +75,6 @@ namespace mediasoupclient
 			nlohmann::json sdpObject = nlohmann::json::object();
 		};
 	} // namespace Sdp
-} // namespace mediasoupclient
+} // namespace crtc_client
 
 #endif

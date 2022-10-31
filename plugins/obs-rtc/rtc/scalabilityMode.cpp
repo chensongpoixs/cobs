@@ -9,8 +9,7 @@ using json = nlohmann::json;
 static const std::regex ScalabilityModeRegex(
   "^[LS]([1-9]\\d{0,1})T([1-9]\\d{0,1}).*", std::regex_constants::ECMAScript);
 
-namespace mediasoupclient
-{
+namespace crtc_client {
 	using namespace chen;
 	json parseScalabilityMode(const std::string& scalabilityMode)
 	{
@@ -45,4 +44,4 @@ namespace mediasoupclient
 
 		return jsonScalabilityMode;
 	}
-} // namespace mediasoupclient
+} // namespace crtc_client

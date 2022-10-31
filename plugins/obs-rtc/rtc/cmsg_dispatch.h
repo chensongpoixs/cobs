@@ -1,4 +1,4 @@
-﻿/***********************************************************************************************
+/***********************************************************************************************
 			created: 		2019-05-13
 			author:			chensong
 			purpose:		msg_dipatch
@@ -18,8 +18,10 @@
 #include "json.hpp"
 namespace chen {
 	class cclient;
-	//typedef void (cwebrtc_mgr::*handler_webrtc_type)(Json::Value & value);
-	typedef bool (cclient::*handler_type)(  nlohmann::json & value);
+	 //typedef void (cwebrtc_mgr::*handler_webrtc_type)(Json::Value & value);
+	//typedef bool (cclient::*server_protoo_msg)(const nlohmann::json &msg);
+	// std::map < EMsgBaseID, server_protoo_msg> m_server_notification_protoo_msg_call;
+	typedef bool (cclient::*handler_type)( const nlohmann::json & value);
 #pragma pack(push, 4)
 
 	struct cmsg_handler

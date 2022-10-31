@@ -1,6 +1,6 @@
-#define MSC_CLASS "mediasoupclient"
+//#define MSC_CLASS "crtc_client"
 
-#include "mediasoupclient.hpp"
+#include "crtc_client.h"
  
 
 #include <rtc_base/helpers.h>
@@ -8,8 +8,7 @@
 #include <rtc_base/time_utils.h>
 #include <sstream>
 
-namespace mediasoupclient
-{
+namespace crtc_client {
 	void Initialize() // NOLINT(readability-identifier-naming)
 	{
 		 
@@ -26,4 +25,4 @@ namespace mediasoupclient
 	}
 
 	 
-} // namespace mediasoupclient
+} // namespace crtc_client

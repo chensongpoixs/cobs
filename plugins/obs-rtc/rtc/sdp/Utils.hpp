@@ -6,8 +6,7 @@
 #include <api/media_stream_interface.h>
 #include <string>
 
-namespace mediasoupclient
-{
+namespace crtc_client {
 	namespace Sdp
 	{
 		namespace Utils
@@ -21,6 +20,6 @@ namespace mediasoupclient
 			void applyCodecParameters(const json& offerRtpParameters, json& answerMediaObject);
 		} // namespace Utils
 	}   // namespace Sdp
-} // namespace mediasoupclient
+} // namespace crtc_client
 
 #endif

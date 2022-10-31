@@ -1,10 +1,10 @@
-#include "cmediasoup_mgr.h"
+#include "crtc_mgr.h"
 #include "cclient.h"
 #include "clog.h"
 #include "cinput_device.h"
 #include "clog.h"
 #include "cclient.h"
-#include "mediasoupclient.hpp"
+#include "crtc_client.h"
 #include "ortc.hpp"
 #include "clog.h"
 #include "ccfg.h"
@@ -89,12 +89,12 @@ namespace chen
 			ERROR_EX_LOG("init input_device mouble !!!  ");
 			return false;
 		}
-		mediasoupclient::Initialize();
+		crtc_client::Initialize();
 		return true;
 	}
 	void crtc_mgr::global_destroy()
 	{
-		mediasoupclient::Cleanup();
+		crtc_client::Cleanup();
 		SYSTEM_LOG("mediasoup destroy ok !!!");
 		LOG::destroy();
 	}

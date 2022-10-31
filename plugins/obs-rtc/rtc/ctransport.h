@@ -1,6 +1,6 @@
-﻿#ifndef _C_TRANSPORT_H_
+#ifndef _C_TRANSPORT_H_
 #define _C_TRANSPORT_H_
-#include "mediasoupclient.hpp"
+#include "crtc_client.h"
 #include "cnet_types.h"
 #include "json.hpp"
 #include <memory>
@@ -108,7 +108,7 @@ namespace chen {
 		std::unique_ptr<rtc::Thread> m_networkThread;
 		std::unique_ptr<rtc::Thread> m_signalingThread;
 		std::unique_ptr<rtc::Thread> m_workerThread;
-		std::unique_ptr<mediasoupclient::Sdp::RemoteSdp>	 m_remote_sdp;
+		std::unique_ptr<crtc_client::Sdp::RemoteSdp> m_remote_sdp;
 		std::string											 m_transport_id;
 		
 

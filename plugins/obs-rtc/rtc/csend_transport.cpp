@@ -52,10 +52,13 @@ namespace chen {
 		}
 
 		m_sendingRtpParametersByKind = {
-			{ "video", mediasoupclient::ortc::getSendingRtpParameters("video", extendedRtpCapabilities) }
+			{"video", crtc_client::ortc::getSendingRtpParameters(
+					  "video", extendedRtpCapabilities)}
 		};
 		m_sendingRemoteRtpParametersByKind = {
-			{"video", mediasoupclient::ortc::getSendingRemoteRtpParameters("video", extendedRtpCapabilities)}
+			{"video",
+			 crtc_client::ortc::getSendingRemoteRtpParameters(
+				 "video", extendedRtpCapabilities)}
 		};
 		m_capturer_ptr = nullptr; // COSGCapturerTrackSource::Create();
 		m_track = nullptr; //  m_peer_connection_factory->CreateVideoTrack(std::to_string(rtc::CreateRandomId()), m_capturer_ptr);
@@ -301,7 +304,9 @@ namespace chen {
 			 std::string offer;
 
 			 desc->ToString(&offer);
-			 const mediasoupclient::Sdp::RemoteSdp::MediaSectionIdx mediaSectionIdx = m_remote_sdp->GetNextMediaSectionIdx();
+			 const crtc_client::Sdp::RemoteSdp::MediaSectionIdx
+				 mediaSectionIdx =
+					 m_remote_sdp->GetNextMediaSectionIdx();
 			 nlohmann::json localSdpObject = sdptransform::parse(offer);
 
 
@@ -310,11 +315,15 @@ namespace chen {
 
 
 			 // Set RTCP CNAME.
-			 sendingRtpParameters["rtcp"]["cname"] = mediasoupclient::Sdp::Utils::getCname(offerMediaObject);
+			 sendingRtpParameters["rtcp"]["cname"] =
+				 crtc_client::Sdp::Utils::getCname(
+					 offerMediaObject);
 
 			 // Set RTP encodings by parsing the SDP offer if no encodings are given.
 
-			 sendingRtpParameters["encodings"] = mediasoupclient::Sdp::Utils::getRtpEncodings(offerMediaObject);
+			 sendingRtpParameters["encodings"] =
+				 crtc_client::Sdp::Utils::getRtpEncodings(
+					 offerMediaObject);
 
 			 // If VP8 and there is effective simulcast, add scalabilityMode to each encoding.
 			 std::string  mimeType = sendingRtpParameters["codecs"][0]["mimeType"].get<std::string>();

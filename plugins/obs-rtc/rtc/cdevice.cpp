@@ -383,7 +383,7 @@ namespace chen {
 			 
 			try 
 			{
-				  nativeRtpCapabilities = mediasoupclient::Sdp::Utils::extractRtpCapabilities(sdpObject);
+				  nativeRtpCapabilities = crtc_client::Sdp::Utils::extractRtpCapabilities(sdpObject);
 				 
 			}
 			catch (...)

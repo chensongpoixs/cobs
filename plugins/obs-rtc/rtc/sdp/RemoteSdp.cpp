@@ -6,8 +6,7 @@
 #include "../clog.h"
 using json = nlohmann::json;
 
-namespace mediasoupclient
-{
+namespace crtc_client {
 	/* Sdp::RemoteSdp methods */
 
 	Sdp::RemoteSdp::RemoteSdp(
@@ -357,4 +356,4 @@ namespace mediasoupclient
 
 		this->sdpObject["groups"][0]["mids"] = mids;
 	}
-} // namespace mediasoupclient
+} // namespace crtc_client

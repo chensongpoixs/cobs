@@ -201,7 +201,7 @@ set(rtc_HEADERS
 		./rtc/clog.h
 		./rtc/clog_color.h
 		./rtc/clog_define.h
-		./rtc/cmediasoup_mgr.h
+		./rtc/crtc_mgr.h
 		./rtc/cmsg_base_id.h
 		./rtc/cmsg_dispatch.h
 		./rtc/cnet_types.h
@@ -221,7 +221,7 @@ set(rtc_HEADERS
 		./rtc/cwindow_util.h
 		./rtc/desktop_capture_source.h
 		./rtc/json.hpp
-		./rtc/mediasoupclient.hpp
+		./rtc/crtc_client.h
 		./rtc/ortc.hpp
 		./rtc/Robot.h
 		./rtc/scalabilityMode.hpp
@@ -259,7 +259,7 @@ set(rtc_SOURCES
 	./rtc/cint2str.cpp
 	./rtc/clog.cpp 
 	./rtc/clog_color.cpp 
-	./rtc/cmediasoup_mgr.cpp
+	./rtc/crtc_mgr.cpp
 	./rtc/cmsg_dispatch.cpp
 	./rtc/cnet_types.cpp
 	./rtc/cproducer.cpp
@@ -275,7 +275,7 @@ set(rtc_SOURCES
 	./rtc/cwindow_util.cpp 
 	./rtc/desktop_capture_source.cpp
 	./rtc/grammar.cpp
-	./rtc/mediasoupclient.cpp
+	./rtc/crtc_client.cpp
 	./rtc/ortc.cpp
 	./rtc/parser.cpp
 	./rtc/Robot.cpp 

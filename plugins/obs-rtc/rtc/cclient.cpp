@@ -1,5 +1,5 @@
 #include "cclient.h"
-#include "mediasoupclient.hpp"
+#include "crtc_client.h"
 #include "ortc.hpp"
 #include "clog.h"
 #include "ccfg.h"
@@ -58,24 +58,26 @@ namespace chen {
 	static const  int32 OSG_RGBA_HEIGHT = 2000;
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define  WEBSOCKET_PROTOO_CHECK_RESPONSE()  if (msg.find(WEBSOCKET_RESPONSE) == msg.end())\
-	{\
-		ERROR_EX_LOG(" [msg = %s] not find 'result' failed !!!", msg.dump().c_str());\
-		return false;\
-	}\
-	if (msg.find(WEBSOCKET_PROTOO_DATA) == msg.end())\
-	{\
-		ERROR_EX_LOG("  [msg = %s] not find 'data' failed !!!", msg.dump().c_str());\
-		return false;\
-	}\
-	int  result = msg[WEBSOCKET_RESPONSE].get<int>();\
-	if (0 != result)\
-	{\
-		ERROR_EX_LOG("  not ok  [msg = %s] !!!", msg.dump().c_str());\
-		return false;\
+
+
+#define WEBSOCKET_CHECK_DATA()                                          \
+	if (msg.find(WEBSOCKET_PROTOO_DATA) == msg.end()) {             \
+		ERROR_EX_LOG("  [msg = %s] not find 'data' failed !!!", \
+			     msg.dump().c_str());                       \
+		return false;                                           \
 	}
-
-
+#define WEBSOCKET_PROTOO_CHECK_RESPONSE()                                     \
+	if (msg.find(WEBSOCKET_RESPONSE) == msg.end()) {                      \
+		ERROR_EX_LOG(" [msg = %s] not find 'result' failed !!!",      \
+			     msg.dump().c_str());                             \
+		return false;                                                 \
+	}                                                                     \
+	WEBSOCKET_CHECK_DATA()						      \
+	int result = msg[WEBSOCKET_RESPONSE].get<int>();                      \
+	if (0 != result) {                                                    \
+		ERROR_EX_LOG("  not ok  [msg = %s] !!!", msg.dump().c_str()); \
+		return false;                                                 \
+	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////
 
 	const uint32_t TICK_TIME = 200;
@@ -598,14 +600,19 @@ namespace chen {
 		try {
 
 		
-			if (!mediasoupclient::ortc::getExtendedRtpCapabilities(m_extendedRtpCapabilities, nativeRtpCapabilities, routerRtpCapabilities))
+			if (!crtc_client::ortc::getExtendedRtpCapabilities(
+				    m_extendedRtpCapabilities,
+				    nativeRtpCapabilities,
+				    routerRtpCapabilities))
 			{
 				ERROR_EX_LOG("getExtendedRtpCapabilities failed !!!");
 				return false;
 			}
 		
 			// Generate our receiving RTP capabilities for receiving media.
-			m_recvRtpCapabilities = mediasoupclient::ortc::getRecvRtpCapabilities(m_extendedRtpCapabilities);
+			m_recvRtpCapabilities =
+				crtc_client::ortc::getRecvRtpCapabilities(
+					m_extendedRtpCapabilities);
 
 
 			m_sctpCapabilities = deivce::GetNativeSctpCapabilities();
@@ -960,7 +967,7 @@ namespace chen {
 		//WEBSOCKET_PROTOO_CHECK_RESPONSE();
 		
 		nlohmann::json data_rtp = msg[WEBSOCKET_PROTOO_DATA];
-		if (!mediasoupclient:: ortc::validateRtpCapabilities(data_rtp))
+		if (!crtc_client::ortc::validateRtpCapabilities(data_rtp))
 		{
 			WARNING_EX_LOG("RouterRtpCapabilities validate rtp capabilities [data = %s] failed !!!", data_rtp.dump().c_str());
 			m_status = EMediasoup_Reset;
@@ -987,7 +994,7 @@ namespace chen {
 		}
 		NORMAL_EX_LOG("Login OK !!!");
 		return false;
-		//if (!mediasoupclient::ortc::validateRtpCapabilities(data_rtp))
+		//if (!crtc_client::ortc::validateRtpCapabilities(data_rtp))
 		//{
 		//	WARNING_EX_LOG("RouterRtpCapabilities validate rtp capabilities [data = %s] failed !!!", data_rtp.dump().c_str());
 		//	m_status = EMediasoup_Reset;
@@ -1071,6 +1078,15 @@ namespace chen {
 		return true;
 		return true;
 	}
+	bool cclient::handler_join_room_update(const nlohmann::json &msg)
+	{
+		WEBSOCKET_CHECK_DATA();
+
+		NORMAL_EX_LOG("[msg = %s]", msg.dump().c_str());
+
+		return true;
+	}
+
 	//bool cclient::_server_create_webrtc_transport(const  nlohmann::json & msg)
 	//{
 	//	//NORMAL_EX_LOG(" server create webrtc --> ");

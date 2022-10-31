@@ -12,8 +12,7 @@
 #include <vector>
 #include "../Utils.hpp"
 #include "../clog.h"
-namespace mediasoupclient
-{
+namespace crtc_client {
 	namespace Sdp
 	{
 		namespace Utils
@@ -245,7 +244,9 @@ namespace mediasoupclient
 				}
 
 				auto& ssrcMsidLine = *jsonSsrcIt;
-				auto v = mediasoupclient::Utils::split(ssrcMsidLine["value"].get<std::string>(), ' ');
+				auto v = crtc_client::Utils::split(
+					ssrcMsidLine["value"].get<std::string>(),
+					' ');
 				auto& streamId = v[0];
 				auto& trackId  = v[1];
 				auto firstSsrc = ssrcMsidLine["id"].get<std::uint32_t>();
@@ -271,7 +272,10 @@ namespace mediasoupclient
 						  if (jsonSsrcsIt == line.end() || !jsonSsrcsIt->is_string())
 							  return false;
 
-						  auto v = mediasoupclient::Utils::split(jsonSsrcsIt->get<std::string>(), ' ');
+						  auto v = crtc_client::Utils::split(
+							  jsonSsrcsIt->get<
+								  std::string>(),
+							  ' ');
 
 						  if (std::stoull(v[0]) == firstSsrc)
 						  {
@@ -316,7 +320,8 @@ namespace mediasoupclient
 				offerMediaObject["ssrcs"]      = json::array();
 
 				std::vector<uint32_t> ussrcs = ssrcs;
-				auto ssrcsLine               = mediasoupclient::Utils::join(ussrcs, ' ');
+				auto ssrcsLine =
+					crtc_client::Utils::join(ussrcs, ' ');
 
 				std::string msidValue(streamId);
 				msidValue.append(" ").append(trackId);
@@ -445,7 +450,9 @@ namespace mediasoupclient
 							continue;
 
 						auto fidLine = line["ssrcs"].get<std::string>();
-						auto v       = mediasoupclient::Utils::split(fidLine, ' ');
+						auto v =
+							crtc_client::Utils::split(
+								fidLine, ' ');
 						auto ssrc    = std::stoull(v[0]);
 						auto rtxSsrc = std::stoull(v[1]);
 
@@ -555,4 +562,4 @@ namespace mediasoupclient
 			}
 		} // namespace Utils
 	}   // namespace Sdp
-} // namespace mediasoupclient
+} // namespace crtc_client

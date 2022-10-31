@@ -10,7 +10,7 @@
 #include <string>
 #include "clog.h"
 using json = nlohmann::json;
-using namespace mediasoupclient;
+using namespace crtc_client;
 
 static constexpr uint32_t ProbatorSsrc{ 1234u };
 static const std::string ProbatorMid("probator");
@@ -25,8 +25,7 @@ static uint8_t getH264LevelAssimetryAllowed(const json& codec);
 static std::string getH264ProfileLevelId(const json& codec);
 static std::string getVP9ProfileId(const json& codec);
 
-namespace mediasoupclient
-{
+namespace crtc_client {
 	namespace ortc
 	{
 		/**
@@ -1641,7 +1640,7 @@ namespace mediasoupclient
 			return codecIt != codecs.end();
 		}
 	} // namespace ortc
-} // namespace mediasoupclient
+} // namespace crtc_client
 
 // Private helpers used in this file.
 

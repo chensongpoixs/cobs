@@ -4,8 +4,7 @@
 #include "../json.hpp"
 #include <string>
 
-namespace mediasoupclient
-{
+namespace crtc_client {
 	namespace Sdp
 	{
 		class MediaSection
@@ -65,6 +64,6 @@ namespace mediasoupclient
 			void SetDtlsRole(const std::string& role) override;
 		};
 	} // namespace Sdp
-} // namespace mediasoupclient
+} // namespace crtc_client
 
 #endif

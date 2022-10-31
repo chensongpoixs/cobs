@@ -328,18 +328,11 @@ static void *rtc_player_create(obs_data_t *settings, obs_source_t *source)
 
 	pthread_mutex_init(&wc->update_mutex, NULL);
 	 
-	c_capture_init(wc);
+	/*c_capture_init(wc);
 	c_set_video_callback(&capture_callback);
-	c_capture_startup();
-	/*if (graphics_uses_d3d11) {
-		static const char *const module = "libobs-winrt";
-		wc->winrt_module = os_dlopen(module);
-		if (wc->winrt_module) {
-			load_winrt_imports(&wc->exports, wc->winrt_module,
-					   module);
-		}
-	}*/
-
+	c_capture_startup();*/
+	 
+	 
 	const HMODULE hModuleUser32 = GetModuleHandle(L"User32.dll");
 	if (hModuleUser32) {
 		//让 DPI 察觉到当前线程
@@ -402,7 +395,7 @@ static void rtc_player_actual_destroy(void *data)
 
 static void rtc_player_destroy(void *data)
 {
-	c_capture_destroy();
+	//c_capture_destroy();
 	obs_queue_task(OBS_TASK_GRAPHICS, rtc_player_actual_destroy, data,
 		       false);
 }

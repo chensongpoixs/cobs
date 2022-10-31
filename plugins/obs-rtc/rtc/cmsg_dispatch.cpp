@@ -1,4 +1,4 @@
-﻿/***********************************************************************************************
+/***********************************************************************************************
 					created: 		2019-05-13
 					author:			chensong
 					purpose:		msg_dipatch
@@ -16,12 +16,41 @@ namespace chen {
 	}
 	bool cmsg_dispatch::init()
 	{
+
+
+
+		/*m_server_notification_protoo_msg_call.insert(
+			std::make_pair(S2C_Login, &cclient::handler_Login));
+		m_server_notification_protoo_msg_call.insert(std::make_pair(
+			S2C_CreateRtc,
+			&cclient::handler_create_webrtc_transport));
+		m_server_notification_protoo_msg_call.insert(std::make_pair(
+			S2C_RtcConnect,
+			&cclient::handler_connect_webrtc_transport));
+
+		m_server_notification_protoo_msg_call.insert(std::make_pair(
+			S2C_RtcProduce,
+			&cclient::handler_produce_webrtc_transport));
+
+		m_server_notification_protoo_msg_call.insert(
+			std::make_pair(S2C_RtpCapabilitiesUpdate,
+				       &cclient::handler_rtp_capabilities));*/
 		
-		/*_register_msg_handler(S2C_Login, "S2C_Login", &cclient ::handler_s2c_login);
+
+		_register_msg_handler(S2C_Login, "S2C_Login",  &cclient ::handler_Login);
+		_register_msg_handler(S2C_CreateRtc, "S2C_CreateRtc",  &cclient::handler_create_webrtc_transport);
+		 
+		/// ///////////////////////////////////////////
+		 
+		_register_msg_handler(
+			S2C_RtcProduce, "S2C_RtcProduce",
+			&cclient::handler_produce_webrtc_transport);
+		_register_msg_handler(
+			S2C_RtpCapabilitiesUpdate, "S2C_RtpCapabilitiesUpdate",
+				      &cclient::handler_rtp_capabilities);
+		_register_msg_handler(S2C_JoinRoomUpdate, "S2C_JoinRoomUpdate",  
+				      &cclient::handler_join_room_update);
  
-		_register_msg_handler(S2C_CreateRoom, "S2C_CreateRoom", &cclient::handler_s2c_create_room);
-		_register_msg_handler(S2C_DestroyRoom, "S2C_DestroyRoom", &cclient::handler_s2c_destroy_room);
-*/
 
 		return true;
 	}

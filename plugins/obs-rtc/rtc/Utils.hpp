@@ -9,8 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace mediasoupclient
-{
+namespace crtc_client {
 	namespace Utils
 	{
 		template<typename T>
@@ -166,6 +165,6 @@ namespace mediasoupclient
 			return 0.0f;
 		}
 	} // namespace Utils
-} // namespace mediasoupclient
+} // namespace crtc_client
 
 #endif
