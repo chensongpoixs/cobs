@@ -5,8 +5,8 @@ author:			chensong
 
 purpose:		log
 ************************************************************************************************/
-#ifndef C_MEDIASOUP_H
-#define C_MEDIASOUP_H
+#ifndef C_RTC_MGR_H
+#define C_RTC_MGR_H
 #include <thread>
 #include <string>
 #include <functional>
@@ -74,4 +74,4 @@ namespace chen
 		void*				m_client_ptr;
 	};
 }
-#endif // C_MEDIASOUP_H
+#endif // C_RTC_MGR_H

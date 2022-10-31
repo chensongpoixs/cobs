@@ -32,7 +32,7 @@ namespace crtc_client {
 			{
 				auto candidateObject = json::object();
 
-				// mediasoup does mandate rtcp-mux so candidates component is always
+				// C_RTC_MGR_H does mandate rtcp-mux so candidates component is always
 				// RTP (1).
 				candidateObject["component"]  = 1;
 				candidateObject["foundation"] = candidate["foundation"];

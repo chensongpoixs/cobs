@@ -21,6 +21,7 @@
 #include "build_version.h"
 //#include "cdesktop_capture.h"
 #include "capture.h"
+#include "cmsg_dispatch.h"
 namespace chen
 {
 	using namespace chen;
@@ -89,13 +90,25 @@ namespace chen
 			ERROR_EX_LOG("init input_device mouble !!!  ");
 			return false;
 		}
+		SYSTEM_LOG(" input device OK !!!");
+
+		if (!g_msg_dispatch.init())
+		{
+			ERROR_EX_LOG("msg dispatch init failed !!!");
+			return false;
+		}
+		SYSTEM_LOG("msg dispath init OK !!!");
 		crtc_client::Initialize();
 		return true;
 	}
 	void crtc_mgr::global_destroy()
 	{
+		s_input_device.Destroy();
+		SYSTEM_LOG(" input device destroy OK !!!");
+		g_msg_dispatch.destroy();
+		SYSTEM_LOG("msg dispatch destroy OK !!!");
 		crtc_client::Cleanup();
-		SYSTEM_LOG("mediasoup destroy ok !!!");
+		SYSTEM_LOG("rtc_client destroy ok !!!");
 		LOG::destroy();
 	}
 	bool crtc_mgr::init(uint32_t gpu_index)

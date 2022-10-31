@@ -39,6 +39,9 @@ namespace chen {
 
 		_register_msg_handler(S2C_Login, "S2C_Login",  &cclient ::handler_Login);
 		_register_msg_handler(S2C_CreateRtc, "S2C_CreateRtc",  &cclient::handler_create_webrtc_transport);
+		_register_msg_handler(
+			S2C_RtcConnect, "S2C_RtcConnect",
+			&cclient::handler_connect_webrtc_transport);
 		 
 		/// ///////////////////////////////////////////
 		 
