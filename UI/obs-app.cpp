@@ -421,7 +421,7 @@ bool OBSApp::InitGlobalConfigDefaults()
 
 	config_set_default_bool(globalConfig, "General", "ConfirmOnExit", true);
 
-#if _WIN32
+#if !_WIN32
 	config_set_default_string(globalConfig, "Video", "Renderer",
 				  "Direct3D 11");
 #else
