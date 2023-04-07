@@ -870,7 +870,7 @@ static bool get_encoded_packet(struct nvenc_data *enc, bool finalize)
 
 	return true;
 }
-
+static FILE *out_file_ptr = NULL;
 static bool nvenc_encode_tex(void *data, uint32_t handle, int64_t pts,
 			     uint64_t lock_key, uint64_t *next_key,
 			     struct encoder_packet *packet,
@@ -975,10 +975,20 @@ static bool nvenc_encode_tex(void *data, uint32_t handle, int64_t pts,
 
 		/* subtract bframe delay from dts */
 		dts -= (int64_t)enc->bframes * packet->timebase_num;
-
+		/*if (!out_file_ptr) {
+			out_file_ptr = fopen("./test.yuv", "wb+");
+		}*/
+		 
+		
 		*received_packet = true;
 		packet->data = enc->packet_data.array;
 		packet->size = enc->packet_data.num;
+		/*if (out_file_ptr && enc->packet_data.array &&
+		    enc->packet_data.num> 0) {
+			fwrite(enc->packet_data.array, 1, enc->packet_data.num,
+			       out_file_ptr);
+			fflush(out_file_ptr);
+		}*/
 		packet->type = OBS_ENCODER_VIDEO;
 		packet->pts = enc->packet_pts;
 		packet->dts = dts;

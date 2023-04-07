@@ -217,6 +217,8 @@ void c_set_video_callback(send_video_callback callback)
 {
 	cpp_set_video_callback(callback);
 }
+
+
 void   c_capture_init(void *data)
 {
 	cpp_capture_init(data);

@@ -331,6 +331,11 @@ static void *rtc_player_create(obs_data_t *settings, obs_source_t *source)
 	/*c_capture_init(wc);
 	c_set_video_callback(&capture_callback);
 	c_capture_startup();*/
+	c_set_recv_video_callback(wc, &capture_callback);
+	c_player_rtc_init();
+	
+	c_player_rtc_startup();
+	
 	 
 	 
 	const HMODULE hModuleUser32 = GetModuleHandle(L"User32.dll");
@@ -396,6 +401,7 @@ static void rtc_player_actual_destroy(void *data)
 static void rtc_player_destroy(void *data)
 {
 	//c_capture_destroy();
+	c_player_rtc_destroy();
 	obs_queue_task(OBS_TASK_GRAPHICS, rtc_player_actual_destroy, data,
 		       false);
 }

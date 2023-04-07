@@ -230,6 +230,10 @@ set(rtc_HEADERS
 		./rtc/wsclient.h
 		./rtc/cassertion_macros.h
 		./rtc/build_version.h
+		./rtc/cvideo_render.h
+		./rtc/crtc_transport.h
+		./rtc/crtc_player.h
+		./rtc/cd3d_renderer.h
 	)
 
 set(rtc_SOURCES
@@ -281,7 +285,11 @@ set(rtc_SOURCES
 	./rtc/Robot.cpp 
 	./rtc/scalabilityMode.cpp
 	./rtc/writer.cpp
-	./rtc/wsclient.cpp 
+	./rtc/wsclient.cpp
+	./rtc/cvideo_render.cpp 
+		./rtc/crtc_transport.cpp 
+		./rtc/crtc_player.cpp
+		./rtc/cd3d_renderer.cpp 
 	 )
 
 #add_dependencies(${PROJECT_NAME} clib)

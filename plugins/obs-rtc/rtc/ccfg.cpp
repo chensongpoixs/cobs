@@ -30,7 +30,7 @@ namespace chen {
 		set_uint32(ECI_RtcWebSocketPort,
 			   "rtc_websocket_port", 9500);
 		set_string(ECI_RoomName, "room_name", "chensong");
-		set_string(ECI_UserName, "client_name", "test");
+		set_string(ECI_UserName, "client_name", "chensong");
 		set_uint32(ECI_VideoFps, "video_fps", 30);
 		set_uint32(ECI_WebSocketReconnect, "reconnect_timer", 10); // 抛弃了变量
 		set_int32(ECI_ReconnectWait, "reconnect_wait", 10);
